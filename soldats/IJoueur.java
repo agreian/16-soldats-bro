@@ -11,8 +11,8 @@ package soldats;
  *
  */
 
-public interface IJoueur {
-	
+public interface IJoueur 
+{	
 	static final int TAILLE = 9; // Taille du plateau. Pas la peine de la changer !
 	static final int BLANC = 1;  // Mais pas lors de la conversation avec l'arbitre (méthodes initJoueur et getNumJoueur)
 	static final int NOIR = 2;   // Vous pouvez changer cela en interne si vous le souhaitez
@@ -71,9 +71,7 @@ public interface IJoueur {
 	/**
 	 * @return Le nom de votre binome
 	 */
-	public String binoName();
-
-	
+	public String binoName();	
 }
 
 
