@@ -4,7 +4,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class AppletSoldats extends JApplet
-
 {
 	final static int WHITE = 1;
 	final static int BLACK = 2;
