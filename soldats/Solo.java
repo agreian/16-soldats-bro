@@ -5,52 +5,42 @@ import java.io.*;
 
 import javax.swing.JFrame;
 
-/**
- * Petite Classe toute simple qui vous montre comment on peut lancer une partie
- * sur deux IJoueurs... Cela  vous servira a debugger facilement votre projet
- * en conditions presque reelles de tournoi
- * 
- * Attention, l'arbitre n'est pas lancŽ dessus, mais comme il s'agit de deux IJoueur ˆ vous
- * il n'est pas nŽcessaire de vŽrifier la validitŽ des coups (bien entendu)
- * 
- * Par contre, comme rien ne vŽrifie la fin de partie (pas d'arbitre), vos IJoueur devront
- * renvoyer la chaine "x x x x" pour dire que la partie est finie.
- * ( Ce qui est diffÃ©rent de la chaine "0 0 0 0" qui dit que vous passer un coup)
- * 
- * Cette classe n'affiche rien : elle se contente de donner la main alternativement aux deux joueurs.
- * 
- * 2008-2012
+ /**
+ * Lance une partie entre deux IJoueur.
+ * Il n'y a pas d'arbitre et cela n'est pas nécessaire car les IJoueur jouent forcément des movements valides.
+ *
+ * Rien ne vérifie la fin de la partie. Les IJoueur doivent ainsi envoyer la chaine "x x x x" pour signaler la fin d'une partie.
+ * (Différent de "0 0 0 0" qui signifie que l'on passe un movement).
+ *
+ * La classe n'affiche rien, elle passe la main d'un joueur à l'autre.
  */
-public class Solo {
-	private static IJoueur joueurBlanc;
-	private static IJoueur joueurNoir;	
+public class Solo 
+{
+	private static IJoueur playerW;
+	private static IJoueur playerB;	
 
 	// Ne pas modifier ces constantes, elles seront utilisees par l'arbitre
-	private final static int BLANC = 1;
-	private final static int NOIR = 2;
+	private final static int WHITE = 1;
+	private final static int BLACK = 2;
 
 	private static int TAILLE = 5; 
 	
 	// applet game viewer
-	static boolean APPLETGRAPHIQUE = true; // Vous pouvez changer la constante
+	static boolean DISPLAY_APPLET = true; // Vous pouvez changer la constante
 
-	public void setAppletGraphique(boolean t) {
-		APPLETGRAPHIQUE = t;
+	public void setDisplayApplet(boolean t) 
+    {
+		DISPLAY_APPLET = t;
 	}
 
 	
 	/**
-	 * Pour Ã©viter de toujours envoyer des lignes de commandes, 
-	 * vous pouvez renvoyer automatiquement dans cette mÃ©thode
-	 * votre joueur par dÃ©faut. Attention, il faut bien remplir
-	 * le return new VOTREJOUEUR() pour que cela fonctionne
-	 * la classe implantee renvoyee doit implanter l'interface
-	 * IJoueur...
-	 * 
+     * Retourne un joueur instancié d'une classe perso. Celle-ci doit implanter IJoueur
 	 * @param s
 	 * @return Ijoueur un joueur demande
 	 */
-	private static IJoueur getDefaultPlayer(String s) {
+	private static IJoueur getDefaultPlayer(String s) 
+    {
 		System.out.println(s + " : defaultPlayer");
 		return new JoueurAleatoireProf();
 		// TODO: Ajouter votre joueur ici
@@ -58,87 +48,84 @@ public class Solo {
 	}
 
 	/**
-	 * Juste pour rendre le tout plus generique, et vous donner une idee
-	 * de comment le tournoi sera lance automatiquement, voici une methode
-	 * permettant de charger une certaine classe implantant un IJoueur
+	 * Charge une classe Joueur (implantant IJoueur) donnée 
 	 * @param classeJoueur
 	 * @param s
 	 * @return la classe chargee dynamiquement
 	 */
-	private static IJoueur loadNamedPlayer(String classeJoueur, String s)  {
+	private static IJoueur loadNamedPlayer(String classeJoueur, String s)  
+    {
 		IJoueur joueur;
 		System.out.print(s + " : Chargement de la classe joueur " + classeJoueur + "... ");
-		try {
+		try 
+        {
 			Class cjoueur = Class.forName(classeJoueur);
 			joueur = (IJoueur)cjoueur.newInstance();
-		}
-		catch (Exception e) {
+		} catch (Exception e) 
+        {
 			System.out.println("Erreur de chargement");
 			System.out.println(e);
 			return null;
 		}
+        
 		System.out.println("Ok");
 		return joueur;
 	}
 	
 	/**
 	 * Boucle principale du jeu, en utilisant une version de l'arbitre identique a celle du tournoi
-	 * L'arbitre sera le garant de la validite des coups, et de leur affichage standard
+	 * L'arbitre sera le garant de la validite des movements, et de leur affichage standard
 	 * pour la publication via le site web.
 	 * 
-	 * @param joueurBlanc
-	 * @param joueurNoir
+	 * @param playerW
+	 * @param playerB
 	 */
-	public static void gameLoop(IJoueur joueurBlanc, IJoueur joueurNoir) {
-		String coup;
+	public static void gameLoop(IJoueur playerW, IJoueur playerB) 
+    {
+		String movement;
 		int x1,y1,x2,y2;
-		boolean partieFinie = false;
-        IJoueur joueurCourant = joueurBlanc; // C'est eux qui commencent
+		boolean gameOver = false;
+        IJoueur currentPlayer = playerW; // Joueurs blancs qui commencent
 
-        while (!partieFinie) {
-
-        	System.out.println("On demande ˆ "  + joueurCourant.binoName() + " de jouer...");
+        while (!gameOver) 
+        {
+        	System.out.println("On demande ˆ "  + currentPlayer.binoName() + " de jouer...");
         	long waitingTime1 = new Date().getTime();
         	
-        	coup = joueurCourant.choixMouvement();
+        	movement = currentPlayer.choixMouvement();
 
         	long waitingTime2 = new Date().getTime();
-			long waitingTime = waitingTime2-waitingTime1 + 1; // On rajoute 1 pour eliminer les temps infinis
-			System.out.println("Le joueur " + joueurCourant.binoName() + " a jouŽ le coup " + coup + " en " + waitingTime + "s.");
-			try {
-				Thread.sleep(1); // Juste pour attendre un peu
+			long waitingTime = waitingTime2-waitingTime1 + 1; // On ajoute 1 pour eliminer les temps infinis
+			System.out.println("Le joueur " + currentPlayer.binoName() + " a joué le movement " + movement + " en " + waitingTime + "s.");
+            
+			try 
+            {
+				Thread.sleep(1); // Attente entre deux movements
 			} catch (InterruptedException e) {}
 			
-		   if (coup.compareTo("x x x x")==0) 
-			   partieFinie = true;
-		   else {
-			   if (joueurCourant.getNumJoueur() == BLANC)
-				   joueurCourant = joueurNoir;
-			   else
-				   joueurCourant = joueurBlanc;
+		   if(movement.compareTo("x x x x") == 0) 
+			   gameOver = true;
+               
+		   else 
+           {
+                // Initialisation du prochain joueur courant (l'ennemi)
+                currentPlayer = (currentPlayer.getNumJoueur() == WHITE) ? playerB : playerW;
 			   
-				StringTokenizer st = new StringTokenizer(coup, " \n\0");
+				StringTokenizer st = new StringTokenizer(movement, " \n\0");
 				x1 = Integer.parseInt(st.nextToken());
 				y1 = Integer.parseInt(st.nextToken());
 				x2 = Integer.parseInt(st.nextToken());
 				y2 = Integer.parseInt(st.nextToken());
 
-			   // On averti le second joueur du coup calcule par le precedent
-			   joueurCourant.mouvementEnnemi(x1,y1,x2,y2);
-			   // Ce sera ensuite a lui de jouer de retour en haut de la boucle
-			   
+			   // Averti l'ennemi (le nouveau joueur courant) du movement joué précedemment
+			   currentPlayer.mouvementEnnemi(x1,y1,x2,y2);
 		   }
         }
         
-        // TODO: Prendre en compte les ŽgalitŽs
-        if (joueurCourant.getNumJoueur() == BLANC)
-            joueurCourant = joueurNoir;//joueurAttaquant;
-        else
-            joueurCourant = joueurBlanc;//joueurDefenseur;
-        joueurBlanc.declareLeVainqueur(joueurCourant.getNumJoueur());
-        joueurNoir.declareLeVainqueur(joueurCourant.getNumJoueur());
-
-        
+        // TODO: Prendre en compte les égalités
+        currentPlayer = (currentPlayer.getNumJoueur() == WHITE) ? playerB : playerW;
+        playerW.declareLeVainqueur(currentPlayer.getNumJoueur());
+        playerB.declareLeVainqueur(currentPlayer.getNumJoueur());        
 	}
 	
 	/**
@@ -150,28 +137,28 @@ public class Solo {
 		System.out.println("Partie solo de 16 Soldats...");
 		
 		if (args.length == 0) { // On a deux classes a charger
-			joueurBlanc = getDefaultPlayer("Blanc");
-			joueurNoir = getDefaultPlayer("Noir");
+			playerW = getDefaultPlayer("WHITE");
+			playerB = getDefaultPlayer("BLACK");
 		} else if (args.length == 2) { // On a deux classes a charger
-			joueurBlanc = getDefaultPlayer("Blanc");
-			joueurNoir = getDefaultPlayer("Noir");
+			playerW = getDefaultPlayer("WHITE");
+			playerB = getDefaultPlayer("BLACK");
 		} else if (args.length == 3) {
-			joueurBlanc = loadNamedPlayer(args[0],"Blanc");
-			joueurNoir = loadNamedPlayer(args[0],"Noir");
+			playerW = loadNamedPlayer(args[0],"WHITE");
+			playerB = loadNamedPlayer(args[0],"BLACK");
 		} else if (args.length == 4) {
-			joueurBlanc = loadNamedPlayer(args[0],"Blanc");
-			joueurNoir = loadNamedPlayer(args[1],"Noir");			
+			playerW = loadNamedPlayer(args[0],"WHITE");
+			playerB = loadNamedPlayer(args[1],"BLACK");			
 		}
 				
-		joueurBlanc.initJoueur(BLANC);
-		System.out.println("Joueur Blanc : " + joueurBlanc.binoName());
+		playerW.initJoueur(WHITE);
+		System.out.println("Joueur WHITE : " + playerW.binoName());
 
-		joueurNoir.initJoueur(NOIR);
-		System.out.println("Joueur Noir : " + joueurNoir.binoName());
+		playerB.initJoueur(BLACK);
+		System.out.println("Joueur BLACK : " + playerB.binoName());
 		
 		System.out.println("Initialisation des deux joueurs ok");
 
-		gameLoop(joueurBlanc, joueurNoir);
+		gameLoop(playerW, playerB);
 		
 	}
 }
