@@ -18,27 +18,25 @@ import java.util.*;
  * @author L. Simon (Univ. Paris-Sud)- 2006-2013
  * @see IJoueur
  */
-public class ClientJeu {
-	
-	static final int NOIR = 2; // Vous pouvez changer cela en interne si vous le souhaitez
-	static final int BLANC = 1; // Mais pas lors de la conversation avec l'arbitre
-	static final int VIDE = 0;
+public class ClientJeu 
+{	
+	static final int BLACK = 2; // Vous pouvez changer cela en interne si vous le souhaitez
+	static final int WHITE = 1; // Mais pas lors de la conversation avec l'arbitre
+	static final int EMPTY = 0;
 	
 	/**
 	 * @param args Dans l'ordre : NomClasseJoueur MachineServeur PortEcoute
 	 */
-	public static void main(String[] args) {
-				
-		if (args.length < 3) {
+	public static void main(String[] args) 
+    {				
+		if (args.length < 3) 
+        {
 			System.err.println("ClientJeu Usage: NomClasseJoueur MachineServeur PortEcoute");
 			System.exit(1);
 		}
 		
-		// Le nom de la classe joueur � charger dynamiquement
 		String classeJoueur = args[0];
-		// Le nom de la machine serveur a �t� donn� en ligne de commande
 		String serverMachine = args[1];
-		// Le num�ro du port sur lequel on se connecte a aussi �t� donn�
 		int portNum = Integer.parseInt(args[2]);
 		
 		System.out.println("Le client se connectera sur " + serverMachine + ":" + portNum);
@@ -46,14 +44,15 @@ public class ClientJeu {
 		Socket clientSocket = null;
 		IJoueur joueur; 
 		String msg, firstToken;
-		StringTokenizer msgTokenizer; // permet d'analyser les chaines de caractères lues
-		int couleurAJouer; // C'est la couleur qui doit jouer le prochain coup
-		int maCouleur; // C'est ma couleur (quand je joue)
+		StringTokenizer msgTokenizer; // analyser les chaines de caractères lues
+		int playingColor; // couleur qui doit jouer le prochain coup
+		int maCouleur; // ma couleur (quand je joue)
 		
-		boolean jeuTermine = false;
-		int departLigne, departColonne, arriveeLigne, arriveeColonne; // Un mouvement
-		try {
-			// initialise la socket
+		boolean gameOver = false;
+		int startLine, startColumn, endLine, endColumn; // Un mouvement
+        
+		try 
+        {
 			clientSocket = new Socket(serverMachine, portNum);
 			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -65,7 +64,7 @@ public class ClientJeu {
 			System.out.println("Ok");
 			// ****************************************************
 			
-			// Envoie de l'identifiant de votre binome.
+			// Envoie de l'identifiant de votre binome
 			out.println(joueur.binoName());
 			System.out.println("Mon nom de binome est " + joueur.binoName());
 			
@@ -75,63 +74,70 @@ public class ClientJeu {
 			
 			// Lit le contenu du message, toutes les infos du message
 			msgTokenizer = new StringTokenizer(msg, " \n\0");
-			if ((msgTokenizer.nextToken()).equals("Blanc")) {
-				System.out.println("Je suis Blanc, je commence.");
-				maCouleur = BLANC;
-			} else { // doit etre égal à "Noir"
-				System.out.println("Je suis Noir, c'est ennemi qui commence.");
-				maCouleur = NOIR;
+            
+			if ((msgTokenizer.nextToken()).equals("BLANC")) 
+            {
+				System.out.println("Je suis WHITE, je commence.");
+				maCouleur = WHITE;
+			} 
+            
+            else 
+            {
+				System.out.println("Je suis BLACK, c'est ennemi qui commence.");
+				maCouleur = BLACK;
 			}
 
 			// permet d'initialiser votre joueur avec sa couleur
 			joueur.initJoueur(maCouleur);
 			
-			do { // boucle générale de jeu
-				
-				msg = in.readLine(); // Read the msg from the server
+			do // boucle principale
+            {
+				msg = in.readLine(); // Lit le message du serveur
 				System.out.println(msg);
+                
 				msgTokenizer = new StringTokenizer(msg, " \n\0");
 				firstToken = msgTokenizer.nextToken();
-				if (firstToken.equals("FIN!")) {
-					jeuTermine = true;
+                
+				if (firstToken.equals("FIN!")) 
+                {
+					gameOver = true;
 					String theWinnerIs = msgTokenizer.nextToken();
-					if (theWinnerIs.equals("Blanc")) {
-						couleurAJouer = BLANC;
-					} else {
-						if (theWinnerIs.equals("Noir"))
-							couleurAJouer = NOIR;
-						else
-							couleurAJouer = VIDE;
-					}
+                    
+                    playingColor = (theWinnerIs.equals("BLANC")) ? WHITE : (theWinnerIs.equals("NOIR")) ? BLACK : EMPTY;
 					
-					if( couleurAJouer == maCouleur )
+					if(playingColor == maCouleur)
 						System.out.println("J'ai gagné");
 					
-					joueur.declareLeVainqueur(couleurAJouer);
+					joueur.declareLeVainqueur(playingColor);
 				}
-				else if (firstToken.equals("JOUEUR")) {
-					// On demande au joueur de jouer
-					if ((msgTokenizer.nextToken()).equals("Blanc")) {
-						couleurAJouer = BLANC;
-					} else {
-						couleurAJouer = NOIR;
-					}
-					if (couleurAJouer == maCouleur) {
+                
+				else if (firstToken.equals("JOUEUR")) 
+                {
+                    playingColor = ((msgTokenizer.nextToken()).equals("BLANC")) ? WHITE : BLACK;
+                    
+					if (playingColor == maCouleur) 
+                    {
 						// On appelle la classe du joueur pour choisir un mouvement
 						msg = joueur.choixMouvement();
 						out.println(msg);
 					}
-				} else if (firstToken.equals("MOUVEMENT")) {
-					// On lit ce que joue le joueur et on l'envoie � l'autre
-					departColonne = Integer.parseInt(msgTokenizer.nextToken());
-					departLigne = Integer.parseInt(msgTokenizer.nextToken());
-					arriveeColonne = Integer.parseInt(msgTokenizer.nextToken());
-					arriveeLigne = Integer.parseInt(msgTokenizer.nextToken());
-					joueur.mouvementEnnemi( departColonne, departLigne, arriveeColonne, arriveeLigne);
+                    
+				} 
+                
+                else if (firstToken.equals("MOUVEMENT")) 
+                {
+                    // Lit le mouvement du joueur et informe l'ennemi
+					startColumn = Integer.parseInt(msgTokenizer.nextToken());
+					startLine = Integer.parseInt(msgTokenizer.nextToken());
+					endColumn = Integer.parseInt(msgTokenizer.nextToken());
+					endLine = Integer.parseInt(msgTokenizer.nextToken());
+					joueur.mouvementEnnemi( startColumn, startLine, endColumn, endLine);
 				}
-			}while(!jeuTermine);
+			} while(!gameOver);
 		}
-		catch (Exception e) {
+        
+		catch (Exception e) 
+        {
 			System.out.println(e);
 		}
 	}
