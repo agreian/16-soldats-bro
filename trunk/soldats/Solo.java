@@ -137,24 +137,24 @@ public class Solo
 		System.out.println("Partie solo de 16 Soldats...");
 		
 		if (args.length == 0) { // On a deux classes a charger
-			playerW = getDefaultPlayer("WHITE");
-			playerB = getDefaultPlayer("BLACK");
+			playerW = getDefaultPlayer("BLANC");
+			playerB = getDefaultPlayer("NOIR");
 		} else if (args.length == 2) { // On a deux classes a charger
-			playerW = getDefaultPlayer("WHITE");
-			playerB = getDefaultPlayer("BLACK");
+			playerW = getDefaultPlayer("BLANC");
+			playerB = getDefaultPlayer("NOIR");
 		} else if (args.length == 3) {
-			playerW = loadNamedPlayer(args[0],"WHITE");
-			playerB = loadNamedPlayer(args[0],"BLACK");
+			playerW = loadNamedPlayer(args[0],"BLANC");
+			playerB = loadNamedPlayer(args[0],"NOIR");
 		} else if (args.length == 4) {
-			playerW = loadNamedPlayer(args[0],"WHITE");
-			playerB = loadNamedPlayer(args[1],"BLACK");			
+			playerW = loadNamedPlayer(args[0],"BLANC");
+			playerB = loadNamedPlayer(args[1],"NOIR");			
 		}
 				
 		playerW.initJoueur(WHITE);
-		System.out.println("Joueur WHITE : " + playerW.binoName());
+		System.out.println("Joueur BLANC : " + playerW.binoName());
 
 		playerB.initJoueur(BLACK);
-		System.out.println("Joueur BLACK : " + playerB.binoName());
+		System.out.println("Joueur NOIR : " + playerB.binoName());
 		
 		System.out.println("Initialisation des deux joueurs ok");
 
