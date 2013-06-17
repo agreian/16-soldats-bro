@@ -77,13 +77,13 @@ public class ClientJeu
             
 			if ((msgTokenizer.nextToken()).equals("BLANC")) 
             {
-				System.out.println("Je suis WHITE, je commence.");
+				System.out.println("Je suis BLANC, je commence.");
 				maCouleur = WHITE;
 			} 
             
             else 
             {
-				System.out.println("Je suis BLACK, c'est ennemi qui commence.");
+				System.out.println("Je suis NOIR, c'est ennemi qui commence.");
 				maCouleur = BLACK;
 			}
 

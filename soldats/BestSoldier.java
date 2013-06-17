@@ -5,32 +5,33 @@ public class BestSoldier implements IJoueur
 	static final int WHITE = 1;
 	static final int BLACK = 2;
     static final int EMPTY = 0;
+	static final int SIZE = 9; // Taille du plateau
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     
     // Tableau 3D décrivant les mouvements possibles (format "colonne / ligne") à partir d'une case donnée.
-    private static final int[][][] movements = {
+    private static final byte[][][] movements = {
                             { {0},{0},{8,3},{0},{1,3,4},{0},{1,5},{0},{0} },
-                            
+
                             { {0},{0},{0},{3,8,6},{1,2,3,4},{1,5,7},{0},{0},{0} },
-                            
+
                             { {8,4},{0},{3,8,4},{1,3,4},{1,2,3,4,5,6,7,8},{1,4,3},{1,5,4},{0},{5,4} },
-                            
+
                             { {0},{4,8,6},{2,4,3},{1,2,3,4,5,6,7,8},{1,2,3,4},{1,2,3,4,5,6,7,8},{1,2,4},{7,5,4},{0} },
-                            
+
                             { {2,4,3},{1,2,3,4},{1,2,3,4,5,6,7,8},{1,2,3,4},{1,2,3,4,5,6,7,8},{1,2,3,4},{1,2,3,4,5,6,7,8},{1,2,3,4},{2,4,1} },
-                            
+
                             { {0},{2,7,5},{2,4,3},{1,2,3,4,5,6,7,8},{1,2,3,4},{1,2,3,4,5,6,7,8},{1,2,4},{2,6,8},{0} },
-                            
+
                             { {2,7},{0},{3,7,2},{1,3,2},{1,2,3,4,5,6,7,8},{1,2,3},{1,6,2},{0},{6,2} },
-                            
+
                             { {0},{0},{0},{3,7,5},{1,2,3,4},{1,6,8},{0},{0},{0} },
-                            
+
                             { {0},{0},{7,3},{0},{1,3,2},{0},{1,6},{0},{0} }
                         };
     
     // Tableau 2D décrivant l'état d'une cellule (0 : Empty, 1 : White, 2 : Black)
-    private int[][] state = new int[9][9];
+    private byte[][] state = new int[9][9];
     
     
     /**
@@ -58,7 +59,7 @@ public class BestSoldier implements IJoueur
 	 */
 	public String choixMouvement()
     {
-        return "0 0 0 0" + '\0';
+        return "0 0 0 0" + '\0'; // ATTENTION : Format "colonne / ligne", coordonnées allant de 1 à SIZE (9)
     }
 
 	
