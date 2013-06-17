@@ -9,6 +9,9 @@ public class BestSoldier implements IJoueur
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     
+    // Tableau 2D décrivant l'état d'une cellule
+    private byte[][] state;
+    
     // Tableau 3D décrivant les mouvements possibles (format "colonne / ligne") à partir d'une case donnée.
     private static final byte[][][] movements = {
                             { {0},{0},{8,3},{0},{1,3,4},{0},{1,5},{0},{0} },
@@ -29,10 +32,46 @@ public class BestSoldier implements IJoueur
 
                             { {0},{0},{7,3},{0},{1,3,2},{0},{1,6},{0},{0} }
                         };
+        
     
-    // Tableau 2D décrivant l'état d'une cellule (0 : Empty, 1 : White, 2 : Black)
-    private byte[][] state = new int[9][9];
-    
+    public BestSoldier()
+    {
+        state = new int[9][9]; // Initialisation d'un tableau de 9*9 rempli de 0 (= EMPTY)
+        
+        // Pions blancs
+        for(int row = 2; row < 4; ++row)
+        {
+            for(int col = 2; col < 7; ++col)
+            {
+                state[col][row] = WHITE;
+            }
+        }
+        
+        state[2][0] = WHITE;
+        state[4][0] = WHITE;
+        state[6][0] = WHITE;
+        
+        state[3][1] = WHITE;
+        state[4][1] = WHITE;
+        state[5][1] = WHITE;
+        
+        // Pions noirs
+        for(int row = 5; row < 7; ++row)
+        {
+            for(int col = 2; col < 7; ++col)
+            {
+                state[col][row] = BLACK;
+            }
+        }
+        
+        state[2][8] = BLACK;
+        state[4][8] = BLACK;
+        state[6][8] = BLACK;
+        
+        state[3][7] = BLACK;
+        state[4][7] = BLACK;
+        state[5][7] = BLACK;
+    }
     
     /**
 	 * Méthode appelée par l'arbitre pour attribuer une couleur à l'instance Joueur
