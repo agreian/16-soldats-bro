@@ -32,6 +32,9 @@ public class BestSoldier implements IJoueur
                             { {0},{0},{7,3},{0},{1,3,2},{0},{1,6},{0},{0} }
                         };
 
+    // Attention : L'index démarre à 0. colMov[0] correspond au déplacement en colonne du mouvement "1"
+	public static int[] colMov = { 0, -1, 0, 1, +1, -1, -1, +1}; // Déplacement sur le plateau de jeu en colonne en fonction des mouvements 1, 2, 3, ..., 8
+	public static int[] rowMov = { -1, 0, 1, 0, -1, -1, +1, +1}; // Déplacement sur le plateau de jeu en ligne en fonction des mouvements 1, 2, 3, ..., 8
 
     // ctor()
     public BestSoldier()
