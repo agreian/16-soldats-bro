@@ -2,17 +2,17 @@ package soldats;
 
 public class BestSoldier implements IJoueur
 {
-	static final int WHITE = 1;
-	static final int BLACK = 2;
-    static final int EMPTY = 0;
-	static final int SIZE = 9; // Taille du plateau
+	public static final int WHITE = 1;
+	public static final int BLACK = 2;
+    public static final int EMPTY = 0;
+	public static final int SIZE = 9; // Taille du plateau
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     private byte[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
     private int headcount; // Nombre de soldats restant
     
     // Tableau 3D décrivant les mouvements possibles (format "colonne / ligne") à partir d'une case donnée.
-    private static final byte[][][] movements = {
+    public static final byte[][][] movements = {
                             { {0},{0},{8,3},{0},{1,3,4},{0},{1,5},{0},{0} },
 
                             { {0},{0},{0},{3,8,6},{1,2,3,4},{1,5,7},{0},{0},{0} },
