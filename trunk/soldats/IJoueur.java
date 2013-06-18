@@ -14,36 +14,36 @@ package soldats;
 public interface IJoueur 
 {	
 	static final int TAILLE = 9; // Taille du plateau. Pas la peine de la changer !
-	static final int BLANC = 1;  // Mais pas lors de la conversation avec l'arbitre (méthodes initJoueur et getNumJoueur)
+	static final int BLANC = 1;  // Mais pas lors de la conversation avec l'arbitre (methodes initJoueur et getNumJoueur)
 	static final int NOIR = 2;   // Vous pouvez changer cela en interne si vous le souhaitez
 	
 	/**
-	 * L'arbitre vient de lancer votre joueur. Il lui informe par cette méthode
-	 * que vous devez jouer dans cette couleur. Vous pouvez utiliser cette méthode
-	 * abstraite, ou la méthode constructeur de votre classe, pour initialiser
+	 * L'arbitre vient de lancer votre joueur. Il lui informe par cette methode
+	 * que vous devez jouer dans cette couleur. Vous pouvez utiliser cette methode
+	 * abstraite, ou la methode constructeur de votre classe, pour initialiser
 	 * vos structures.
 	 * @param mycolour La couleur dans laquelle vous allez jouer (1=BLANC, 2=NOIR)
 	 */
 	public void initJoueur(int mycolour);
 
-	public int getNumJoueur(); // Doit retourner l'argument pass¬é par la fonction ci-dessus (constantes BLANC ou NOIR)
+	public int getNumJoueur(); // Doit retourner l'argument pass√Çe par la fonction ci-dessus (constantes BLANC ou NOIR)
 
 	
 	/**
-	 * C'est ici que vous devez faire appel à votre IA pour trouver le meilleur coup à jouer
+	 * C'est ici que vous devez faire appel a votre IA pour trouver le meilleur coup a jouer
 	 * sur le plateau courant.
 	 * 
-	 * @return une chaine décrivant le mouvement. Cette chaine doit être décrite exactement comme sur l'exemple :
+	 * @return une chaine decrivant le mouvement. Cette chaine doit etre decrite exactement comme sur l'exemple :
 	 * String msg = "" + colonnePiece + " " + lignePiece + " " + colonneDestination + " " + LigneDestination + '\0';
-	 * Attention, j'ai modifié l'ordre pour être consistant avec l'énoncé du devoir : colonne ligne colonne ligne
+	 * Attention, j'ai modifie l'ordre pour etre consistant avec l'enonce du devoir : colonne ligne colonne ligne
 	 * System.out.println("Voici mon mouvement : " + msg);
 	 */
 	public String choixMouvement();	
 
 	
 	/**
-	 * Méthode appelée par l'arbitre pour désigner le vainqueur. Vous pouvez en profiter pour
-	 * imprimer une bannière de joie... Si vous gagnez... 
+	 * Methode appelee par l'arbitre pour designer le vainqueur. Vous pouvez en profiter pour
+	 * imprimer une banni√®re de joie... Si vous gagnez... 
 	 * 
 	 * @param colour La couleur du gagnant (BLANC=1, NOIR=2).
 	 */
@@ -51,20 +51,20 @@ public interface IJoueur
 	
 	
 	/**
-	 * On suppose que l'arbitre a vérifié que le mouvement ennemi était bien légal. Il vous informe
-	 * du mouvement ennemi. A vous de répercuter ce mouvement dans vos structures. Comme
-	 * par exemple éliminer les pions que ennemi vient de vous prendre par ce mouvement.
-	 * Il n'est pas nécessaire de réfléchir déjà à votre prochain coup à jouer : pour cela
+	 * On suppose que l'arbitre a verifie que le mouvement ennemi etait bien legal. Il vous informe
+	 * du mouvement ennemi. A vous de repercuter ce mouvement dans vos structures. Comme
+	 * par exemple eliminer les pions que ennemi vient de vous prendre par ce mouvement.
+	 * Il n'est pas necessaire de verifie deja a votre prochain coup a jouer : pour cela
 	 * l'arbitre appelera ensuite choixMouvement().
 	 * 
-	 * @param startCol Colonne de départ du mouvement (entre 1 et TAILLE), 
-	 *                 commençant à gauche=1 à droite=(TAILLE)
-	 * @param startRow Ligne de départ du mouvement (entre 1 et TAILLE), 
-	 *                 commençant en haut=1 à bas=(TAILLE)
-	 * @param finishCol Colonne d'arrivée du mouvement (entre 1 et TAILLE),
-	 * 	                commençant à gauche=1 à droite=(TAILLE)
-	 * @param finishRow Ligne d'arrivée du mouvement (entre 1 et TAILLE),
-	 *                  commençant en haut=1 à bas=(TAILLE)
+	 * @param startCol Colonne de depart du mouvement (entre 1 et TAILLE), 
+	 *                 commen√ßant a gauche=1 a droite=(TAILLE)
+	 * @param startRow Ligne de depart du mouvement (entre 1 et TAILLE), 
+	 *                 commen√ßant en haut=1 a bas=(TAILLE)
+	 * @param finishCol Colonne d'arrivee du mouvement (entre 1 et TAILLE),
+	 * 	                commen√ßant a gauche=1 a droite=(TAILLE)
+	 * @param finishRow Ligne d'arrivee du mouvement (entre 1 et TAILLE),
+	 *                  commen√ßant en haut=1 a bas=(TAILLE)
 	 */
 	public void mouvementEnnemi(int startCol, int startRow, int finishCol, int finishRow);
 
