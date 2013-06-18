@@ -103,7 +103,7 @@ public class BestSoldier implements IJoueur
 	 */
 	public String choixMouvement()
     {
-        
+        //Node root = new Node();
         return "0 0 0 0" + '\0'; // ATTENTION : Format "colonne / ligne", coordonnées allant de 1 à SIZE (9)
     }
 
@@ -138,7 +138,25 @@ public class BestSoldier implements IJoueur
         state[startCol-1][startRow-1] = EMPTY; // Il n'y a plus de soldat (case vide) sur l'ancienne case
         state[finishCol-1][finishRow-1] = (playerColor == WHITE) ? BLACK : WHITE;
         
-        // TODO : Mettre à jour state et headcount
+        // Saut sur les bords : saut de 4 case en tout (1 non-walkable, 1 walkable, 1 non-walkable, 1 de destination) 
+        if(Math.abs(finishCol - startCol) == 4 || Math.abs(finishRow - startRow) == 4)
+        {
+            // on sait qu'on a FORCEMENT mangé un pion, en ayant sauté de 4 cases
+            state[(startCol+finishCol)/2][(startRow+finishRow)/2] = EMPTY;
+            --headcount;
+        }
+        
+        // Saut de 2. On a soit bougé sur les bords, soit sauté un soldat
+        else if(Math.abs(finishCol - startCol) == 2 || Math.abs(finishRow - startRow) == 2)
+        {
+            if(movements[(startCol+finishCol)/2][(startRow+finishRow)/2].length > 0) // case walkable : pièce mangée
+            {
+                state[(startCol+finishCol)/2][(startRow+finishRow)/2] = EMPTY;
+                --headcount;
+            }
+            
+            // else { case non-walkable : simple déplacement }
+        }
     }
 
 	/**
