@@ -8,11 +8,11 @@ public class BestSoldier implements IJoueur
 	public static final int SIZE = 9; // Taille du plateau
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
-    private byte[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
+    private int[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
     private int headcount; // Nombre de soldats restant
     
     // Tableau 3D décrivant les mouvements possibles (format "colonne / ligne") à partir d'une case donnée.
-    public static final byte[][][] movements = {
+    public static final int[][][] movements = {
                             { {0},{0},{8,3},{0},{1,3,4},{0},{1,5},{0},{0} },
 
                             { {0},{0},{0},{3,8,6},{1,2,3,4},{1,5,7},{0},{0},{0} },
@@ -136,7 +136,7 @@ public class BestSoldier implements IJoueur
 	public void mouvementEnnemi(int startCol, int startRow, int finishCol, int finishRow)
     {
         state[startCol-1][startRow-1] = EMPTY; // Il n'y a plus de soldat (case vide) sur l'ancienne case
-        state[finishCol-1][finishRow-1] = (color == WHITE) ? BLACK : WHITE;
+        state[finishCol-1][finishRow-1] = (playerColor == WHITE) ? BLACK : WHITE;
         
         // TODO : Mettre à jour state et headcount
     }
