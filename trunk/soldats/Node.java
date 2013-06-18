@@ -179,12 +179,12 @@ public class Node
                 {
                     if(_gameBoard[i][j] == _color) // Si l'ancien contenait l'un de nos soldats, c'est qu'on a repéré la destination du mouvement
                     {
-                        oldPlace = i+" "+j+" ";
+                        oldPlace = i+1+" "+j+1+" ";
                     }
                     
                     else if(_bestSon._gameBoard[i][j] == _color)
                     {
-                        newPlace = " "+i+" "+j+'\0';
+                        newPlace = " "+i+1+" "+j+1+'\0';
                     }
                     
                     // else : un pion noir a disparu : osef
