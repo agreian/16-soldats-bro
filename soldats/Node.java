@@ -7,6 +7,7 @@ public class Node
     private static final int MAX_GENERATIONS = 5;
 
     private ArrayList<Node> _sons;
+    
     // 0 : Vide, 1 : Blanc, 2 : Noir
     private int[][] _gameBoard;
 
@@ -17,6 +18,7 @@ public class Node
 
     private int _generationsCount;
 
+    
     private int _whiteSoldiersCount = 0;
     public int getWhiteSoldiersCount()
     {
@@ -85,6 +87,7 @@ public class Node
                             int nextLine = BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1];
                             nextCol = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.colMov[BestSoldier.movements[i][j][k]-1]*2 : nextCol);
                             nextLine = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1]*2 : nextLine);
+                            
                             if(gameBoard[i + nextCol][j + nextLine] ==  0)
                             {
                                 // On créé un nouveau fils
@@ -93,6 +96,7 @@ public class Node
                                 sonGameBoard[i][j] = 0;
                                 _sons.add(new Node(sonGameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1));
                             }
+                            
                             // Ennemi
                             else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j])
                             {
@@ -114,8 +118,10 @@ public class Node
         }
 
         // Tous les fils ont été crées (leurs fils aussi) : lancer aB
-        // ...
-
+        if(generationsCount == MAX_GENERATIONS)
+        {
+            MaxValue(this, Integer.MIN_VALUE, Integer.MAX_VALUE, MAX_GENERATIONS);
+        }
 
     }
 
@@ -157,5 +163,40 @@ public class Node
         }
 
         return beta;
+    }
+    
+    
+    // Appelé après l'instantiation d'un Node et l'exécution d'alphaBeta. Fait un diff entre <noeud courant> et "bestSon" pour donner le meilleur mouvement
+    public String BestMovement()
+    {
+        String oldPlace = "", newPlace = "";
+        
+        for(int i = 0; i < _gameBoard.length; ++i)
+        {
+            for(int j = 0; j < _gameBoard.length; ++j)
+            {
+                if(_gameBoard[i][j] != _bestSon._gameBoard[i][j]) // Différence entre l'ancien et le nouveau plateau de jeu
+                {
+                    if(_gameBoard[i][j] == _color) // Si l'ancien contenait l'un de nos soldats, c'est qu'on a repéré la destination du mouvement
+                    {
+                        oldPlace = i+" "+j+" ";
+                    }
+                    
+                    else if(_bestSon._gameBoard[i][j] == _color)
+                    {
+                        newPlace = " "+i+" "+j+'\0';
+                    }
+                    
+                    // else : un pion noir a disparu : osef
+                }
+            }
+        }
+        
+        if(oldPlace == "" || newPlace == "") return "0 0 0 0"+'\0';
+        
+        return oldPlace + newPlace;
+        
+        // TODO : penser à incrémenter i/j en formattant le déplacement, car on démarre aux coordonnées "1"
+        // FORMAT COLONNE / LIGNE
     }
 }
