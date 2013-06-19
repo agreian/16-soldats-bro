@@ -105,15 +105,22 @@ public class Node
                                 sonGameBoard[i][j] = 0;
                                 _sons.add(new Node(sonGameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1));
                             }
-                            
-                            // Ennemi
-                            else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j])
+                            else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j]) // Ennemi
                             {                                
                                 // Vérifier qu'on peut manger l'ennemi
                                 int y = i + nextCol * 2, x = j + nextLine * 2;
                                 
                                 if((x >= 0 && x < gameBoard.length) && (y >= 0 && y < gameBoard.length) && BestSoldier.movements[y][x].length != 1 && gameBoard[y][x] == 0)
-                                {                            
+                                {
+									boolean possibleMovement = false;
+								
+									for(int l = 0; l < BestSoldier.movements[i + nextCol][j + nextLine].length; ++l)
+										if(BestSoldier.movements[i + nextCol][j + nextLine][l] == BestSoldier.movements[i][j][k])
+											possibleMovement = true;
+											
+									if(possibleMovement == false)
+										continue;
+									
                                     // On créé un nouveau fils
                                     int[][] sonGameBoard = new int[gameBoard.length][gameBoard.length];
                                     
