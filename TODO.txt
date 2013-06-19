@@ -5,3 +5,11 @@ Deuxième plantage :
 Le pion est en 4,6. Il y a un ennemi en 4,7. Il essaie de sauter en 4,8.
 On ne peut pas passer de 4,6 à 4,8 car il est impossible d'aller de 4,7 à 4,8.
 => Saut illegal
+
+//********** <==== CORRIGÉS ?
+
+
+TODO :
+- Hashmap
+    => Optimiser alpha beta ? Si certains noeuds sont les mêmes : leur alpha-beta est probablement le même
+- Randomize sur l'ordre des fils pour éviter une boucle infinie (les deux IA qui jouent toujours le même coup)
