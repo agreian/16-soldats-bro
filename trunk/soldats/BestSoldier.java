@@ -6,6 +6,7 @@ public class BestSoldier implements IJoueur
 	public static final int BLACK = 2;
     public static final int EMPTY = 0;
 	public static final int SIZE = 9; // Taille du plateau
+    public static final int MAX_GENERATIONS = 5;
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     private int[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
@@ -103,8 +104,9 @@ public class BestSoldier implements IJoueur
 	 */
 	public String choixMouvement()
     {
-        //Node root = new Node();
-        return "0 0 0 0" + '\0'; // ATTENTION : Format "colonne / ligne", coordonnées allant de 1 à SIZE (9)
+        Node root = new Node(state, playerColor, playerColor, MAX_GENERATIONS);
+        
+        return root.BestMovement();
     }
 
 	

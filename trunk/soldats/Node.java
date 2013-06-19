@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 public class Node
 {
-    private static final int MAX_GENERATIONS = 5;
-
     private ArrayList<Node> _sons;
     
     // 0 : Vide, 1 : Blanc, 2 : Noir
@@ -14,7 +12,7 @@ public class Node
     private Node _bestSon;
 
     private int _color;
-    private int _turn = 0;
+    private int _turn;
 
     private int _generationsCount;
 
@@ -118,9 +116,9 @@ public class Node
         }
 
         // Tous les fils ont été crées (leurs fils aussi) : lancer aB
-        if(generationsCount == MAX_GENERATIONS)
+        if(generationsCount == BestSoldier.MAX_GENERATIONS)
         {
-            MaxValue(this, Integer.MIN_VALUE, Integer.MAX_VALUE, MAX_GENERATIONS);
+            MaxValue(this, Integer.MIN_VALUE, Integer.MAX_VALUE, BestSoldier.MAX_GENERATIONS);
         }
 
     }
@@ -135,7 +133,7 @@ public class Node
         {
             int newAlpha = MinValue(node._sons.get(i), alpha, beta, generation-1);
             alpha = (alpha > newAlpha ? alpha : newAlpha);
-            if(node._generationsCount == MAX_GENERATIONS && alpha > newAlpha)
+            if(node._generationsCount == BestSoldier.MAX_GENERATIONS && alpha > newAlpha)
             {
                 node._bestSon = node._sons.get(i);
             }
