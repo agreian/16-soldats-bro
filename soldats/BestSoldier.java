@@ -10,7 +10,6 @@ public class BestSoldier implements IJoueur
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     private int[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
-    private int headcount; // Nombre de soldats restant
     
     // Tableau 3D décrivant les mouvements possibles (format "colonne / ligne") à partir d'une case donnée.
     public static final int[][][] movements = {
@@ -39,9 +38,7 @@ public class BestSoldier implements IJoueur
 
     // ctor()
     public BestSoldier()
-    {
-        headcount = 16; // 16 soldats au départ
-        
+    {        
         state = new int[9][9]; // Initialisation d'un tableau de 9*9 rempli de 0 (= EMPTY)
         
         // Pions blancs
@@ -138,27 +135,31 @@ public class BestSoldier implements IJoueur
 	 */
 	public void mouvementEnnemi(int startCol, int startRow, int finishCol, int finishRow)
     {
-        state[startCol-1][startRow-1] = EMPTY; // Il n'y a plus de soldat (case vide) sur l'ancienne case
-        state[finishCol-1][finishRow-1] = (playerColor == WHITE) ? BLACK : WHITE;
+        --startCol; // pour travailler avec des index de 0 à (TAILLE - 1)
+        --startRow;
+        --finishCol;
+        --finishRow;
+        
+        state[startCol][startRow] = EMPTY; // Il n'y a plus de soldat (case vide) sur l'ancienne case
+        state[finishCol][finishRow] = (playerColor == WHITE) ? BLACK : WHITE;
         
         // Saut sur les bords : saut de 4 case en tout (1 non-walkable, 1 walkable, 1 non-walkable, 1 de destination) 
         if(Math.abs(finishCol - startCol) == 4 || Math.abs(finishRow - startRow) == 4)
         {
             // on sait qu'on a FORCEMENT mangé un pion, en ayant sauté de 4 cases
             state[(startCol+finishCol)/2][(startRow+finishRow)/2] = EMPTY;
-            --headcount;
         }
         
         // Saut de 2. On a soit bougé sur les bords, soit sauté un soldat
         else if(Math.abs(finishCol - startCol) == 2 || Math.abs(finishRow - startRow) == 2)
         {
-            if(movements[(startCol+finishCol)/2][(startRow+finishRow)/2].length > 0) // case walkable : pièce mangée
+            if(movements[(startCol+finishCol)/2][(startRow+finishRow)/2].length > 1) // case walkable : pièce mangée
             {
                 state[(startCol+finishCol)/2][(startRow+finishRow)/2] = EMPTY;
-                --headcount;
+                System.out.println("tmort : "+((startCol+finishCol)/2)+", "+((startRow+finishRow)/2));
             }
             
-            // else { case non-walkable : simple déplacement }
+            //else { case non-walkable : simple déplacement }
         }
     }
 
