@@ -96,19 +96,14 @@ public class Node
                             if(gameBoard[i + nextCol][j + nextLine] ==  0)
                             {
                                 // On créé un nouveau fils
-                                int[][] sonGameBoard = new int[this._gameBoard.length][this._gameBoard.length];
+                                int[][] sonGameBoard = new int[gameBoard.length][gameBoard.length];
                                 for(int l = 0; l < sonGameBoard.length; ++l)
-                                {
                                     for(int m = 0; m < sonGameBoard.length; ++m)
-                                    {
-                                        sonGameBoard[l][m] = this._gameBoard[l][m];
-                                    }
-                                }
+                                        sonGameBoard[l][m] = gameBoard[l][m];
                                 
                                 sonGameBoard[i + nextCol][j + nextLine] = sonGameBoard[i][j];
                                 sonGameBoard[i][j] = 0;
                                 _sons.add(new Node(sonGameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1));
-                                //System.out.println("Nouveau fils, gen : "+(generationsCount - 1)+", nb de fils : "+ _sons.size());
                             }
                             
                             // Ennemi
@@ -120,20 +115,16 @@ public class Node
                                 if((x >= 0 && x < gameBoard.length) && (y >= 0 && y < gameBoard.length) && BestSoldier.movements[y][x].length != 1 && gameBoard[y][x] == 0)
                                 {                            
                                     // On créé un nouveau fils
-                                    int[][] sonGameBoard = new int[this._gameBoard.length][this._gameBoard.length];
+                                    int[][] sonGameBoard = new int[gameBoard.length][gameBoard.length];
                                     
                                     for(int l = 0; l < sonGameBoard.length; ++l)
-                                    {
                                         for(int m = 0; m < sonGameBoard.length; ++m)
-                                        {
-                                            sonGameBoard[l][m] = this._gameBoard[l][m];
-                                        }
-                                    }
+                                            sonGameBoard[l][m] = gameBoard[l][m];
+                                    
                                     sonGameBoard[y][x] = sonGameBoard[i][j];
                                     sonGameBoard[i + nextCol][j + nextLine] = 0;
                                     sonGameBoard[i][j] = 0;
                                     _sons.add(new Node(sonGameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1));
-                                    //System.out.println("Nouveau fils, gen : "+(generationsCount - 1)+", nb de fils : "+ _sons.size());
                                 }
                             }
                         }
@@ -206,12 +197,12 @@ public class Node
             {
                 if(_gameBoard[i][j] != _bestSon._gameBoard[i][j]) // Différence entre l'ancien et le nouveau plateau de jeu
                 {                    
-                    if(_gameBoard[i][j] == _color) // Si l'ancien contenait l'un de nos soldats, c'est qu'on a repéré la destination du mouvement
+                    if(_gameBoard[i][j] == _color) // L'ancien plateau contenait notre pion : ancienne case
                     {
                         oldPlace = (i+1)+" "+(j+1)+" ";
                     }
                     
-                    else if(_bestSon._gameBoard[i][j] == _color)
+                    else if(_bestSon._gameBoard[i][j] == _color) // Le nouveau plateau contient notre pion : nouvelle case
                     {
                         newPlace = (i+1)+" "+(j+1)+'\0';
                     }
@@ -225,5 +216,13 @@ public class Node
         
         return oldPlace + newPlace;
         // FORMAT COLONNE / LIGNE
+    }
+    
+    public int[][] BestSonGameBoard() throws IllegalArgumentException
+    {
+        if(_bestSon == null && _bestSon._gameBoard == null)
+            throw new IllegalArgumentException("Plateau de jeu du prochain coup == null");
+            
+        return _bestSon._gameBoard;
     }
 }
