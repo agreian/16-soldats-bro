@@ -199,16 +199,13 @@ public class Node
     public String BestMovement()
     {
         String oldPlace = "", newPlace = "";
-        boolean foundDifference = false; 
         
         for(int i = 0; i < _gameBoard.length; ++i)
         {
             for(int j = 0; j < _gameBoard.length; ++j)
             {
                 if(_gameBoard[i][j] != _bestSon._gameBoard[i][j]) // Différence entre l'ancien et le nouveau plateau de jeu
-                {
-                    foundDifference = true;
-                    
+                {                    
                     if(_gameBoard[i][j] == _color) // Si l'ancien contenait l'un de nos soldats, c'est qu'on a repéré la destination du mouvement
                     {
                         oldPlace = (i+1)+" "+(j+1)+" ";
