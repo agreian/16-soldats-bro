@@ -1,6 +1,7 @@
 package soldats;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Node
 {
@@ -59,9 +60,9 @@ public class Node
             return getBlackSoldiersCount() - getWhiteSoldiersCount();
     }
 	
-	private static Map<Node> _nodesMap;
+	private static HashMap<Integer, Node> _nodesMap;
 	static {
-        _nodesMap = new Map<Node>();
+        _nodesMap = new HashMap<Integer, Node>();
     }
 	
 	@Override
@@ -71,8 +72,8 @@ public class Node
 
     public Node(int[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
     {
-		if(generationsCount == BestSoldier)
-			_nodesMap.Clear();
+		if(generationsCount == BestSoldier.MAX_GENERATIONS)
+			_nodesMap.clear();
 	
         if(color != BestSoldier.WHITE && color != BestSoldier.BLACK)
             throw new IllegalArgumentException("Couleur inexistante");
@@ -95,7 +96,7 @@ public class Node
 			if(_nodesMap.containsValue(this))
 			{
 				System.out.println("Existe déjà");
-				this = _nodesMap.get(this.hashCode());
+				this._sons = _nodesMap.get(this.hashCode())._sons;
 				return;
 			}
 			else
