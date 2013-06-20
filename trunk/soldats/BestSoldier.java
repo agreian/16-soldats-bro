@@ -103,8 +103,11 @@ public class BestSoldier implements IJoueur
     {
         Node root = new Node(state, playerColor, playerColor, MAX_GENERATIONS);
         root.Evaluation();
-        state = root.BestSonGameBoard();        
-        return root.BestMovement();
+        state = root.BestSonGameBoard();
+		String movement = root.BestMovement();
+		root = null;
+		Node.NodesMap.clear();		
+        return movement;
     }
 
 	

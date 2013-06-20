@@ -58,9 +58,9 @@ public class Node
             return getBlackSoldiersCount() - getWhiteSoldiersCount();
     }
 	
-	private static HashMap<String, Node> _nodesMap;
+	public static HashMap<String, Node> NodesMap;
 	static {
-        _nodesMap = new HashMap<String, Node>();
+        NodesMap = new HashMap<String, Node>();
     }
 	
     public String identity() {
@@ -80,7 +80,7 @@ public class Node
 		if(generationsCount == BestSoldier.MAX_GENERATIONS)
 		{
 			// System.out.println("Existe déjà");
-			_nodesMap.clear();
+			NodesMap.clear();
 		}
 	
         if(color != BestSoldier.WHITE && color != BestSoldier.BLACK)
@@ -102,15 +102,15 @@ public class Node
         {
 			// System.out.println(this.hashCode());
 		
-			if(_nodesMap.containsKey(this.identity()))
+			if(NodesMap.containsKey(this.identity()))
 			{
 				// System.out.println("Existe déjà");
-				this._sons = _nodesMap.get(this.identity())._sons;
+				this._sons = NodesMap.get(this.identity())._sons;
 				return;
 			}
 			else
 			{
-				_nodesMap.put(this.identity(), this);
+				NodesMap.put(this.identity(), this);
 			}
 		
             for(int i=0;i<gameBoard.length;++i)
