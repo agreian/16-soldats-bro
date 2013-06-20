@@ -58,9 +58,22 @@ public class Node
         else
             return getBlackSoldiersCount() - getWhiteSoldiersCount();
     }
+	
+	private static Map<Node> _nodesMap;
+	static {
+        _nodesMap = new Map<Node>();
+    }
+	
+	@Override
+    public int hashCode() {
+        return this._gameBoard.hashCode();
+    }
 
     public Node(int[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
     {
+		if(generationsCount == BestSoldier)
+			_nodesMap.Clear();
+	
         if(color != BestSoldier.WHITE && color != BestSoldier.BLACK)
             throw new IllegalArgumentException("Couleur inexistante");
 
@@ -79,6 +92,17 @@ public class Node
 
         if(generationsCount > 0)
         {
+			if(_nodesMap.containsValue(this))
+			{
+				System.out.println("Existe déjà");
+				this = _nodesMap.get(this.hashCode());
+				return;
+			}
+			else
+			{
+				_nodesMap.put(this.hashCode(), this);
+			}
+		
             for(int i=0;i<gameBoard.length;++i)
             {
                 for(int j=0;j<gameBoard[i].length;++j)
