@@ -5,14 +5,14 @@ public class BestSoldier implements IJoueur
 	public static final byte WHITE = 1;
 	public static final byte BLACK = 2;
     public static final byte EMPTY = 0;
-	public static final int SIZE = 9; // Taille du plateau
-    public static final int MAX_GENERATIONS = 5;
+	public static final byte SIZE = 9; // Taille du plateau
+    public static final byte MAX_GENERATIONS = 5;
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     private byte[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
     
     // Tableau 3D décrivant les mouvements possibles (format "colonne / ligne") à partir d'une case donnée.
-    public static final int[][][] movements = {
+    public static final byte[][][] movements = {
                             { {0},{0},{8,3},{0},{1,3,4},{0},{1,5},{0},{0} },
 
                             { {0},{0},{0},{3,8,6},{1,2,3,4},{1,5,7},{0},{0},{0} },
@@ -33,8 +33,8 @@ public class BestSoldier implements IJoueur
                         };
 
     // Attention : L'index démarre à 0. colMov[0] correspond au déplacement en colonne du mouvement "1"
-	public static int[] colMov = { 0, -1, 0, 1, +1, -1, -1, +1}; // Déplacement sur le plateau de jeu en colonne en fonction des mouvements 1, 2, 3, ..., 8
-	public static int[] rowMov = { -1, 0, 1, 0, -1, -1, +1, +1}; // Déplacement sur le plateau de jeu en ligne en fonction des mouvements 1, 2, 3, ..., 8
+	public static byte[] colMov = { 0, -1, 0, 1, +1, -1, -1, +1}; // Déplacement sur le plateau de jeu en colonne en fonction des mouvements 1, 2, 3, ..., 8
+	public static byte[] rowMov = { -1, 0, 1, 0, -1, -1, +1, +1}; // Déplacement sur le plateau de jeu en ligne en fonction des mouvements 1, 2, 3, ..., 8
 
     // ctor()
     public BestSoldier()
@@ -171,6 +171,6 @@ public class BestSoldier implements IJoueur
 	 */
 	public String binoName()
     {
-        return "Zbeul team";
+        return "Babouche-Guilloux";
     }
 }
