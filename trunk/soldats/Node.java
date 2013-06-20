@@ -2,6 +2,7 @@ package soldats;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.lang.StringBuilder;
 
 public class Node
 {
@@ -60,14 +61,21 @@ public class Node
             return getBlackSoldiersCount() - getWhiteSoldiersCount();
     }
 	
-	private static HashMap<Integer, Node> _nodesMap;
+	private static HashMap<String, Node> _nodesMap;
 	static {
-        _nodesMap = new HashMap<Integer, Node>();
+        _nodesMap = new HashMap<String, Node>();
     }
 	
-	@Override
-    public int hashCode() {
-        return this._gameBoard.hashCode();
+    public String identity() {
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < this._gameBoard.length; ++i)
+		{
+			for(int j = 0; j < this._gameBoard[i].length; ++j)
+			{
+				sb.append(this._gameBoard[i][j]);
+			}
+		}
+        return sb.toString();
     }
 
     public Node(int[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
@@ -93,15 +101,17 @@ public class Node
 
         if(generationsCount > 0)
         {
-			if(_nodesMap.containsKey(this.hashCode()))
+			// System.out.println(this.hashCode());
+		
+			if(_nodesMap.containsKey(this.identity()))
 			{
 				System.out.println("Existe déjà");
-				this._sons = _nodesMap.get(this.hashCode())._sons;
+				this._sons = _nodesMap.get(this.identity())._sons;
 				return;
 			}
 			else
 			{
-				_nodesMap.put(this.hashCode(), this);
+				_nodesMap.put(this.identity(), this);
 			}
 		
             for(int i=0;i<gameBoard.length;++i)

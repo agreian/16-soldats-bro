@@ -156,7 +156,7 @@ public class BestSoldier implements IJoueur
             if(movements[(startCol+finishCol)/2][(startRow+finishRow)/2].length > 1) // case walkable : pièce mangée
             {
                 state[(startCol+finishCol)/2][(startRow+finishRow)/2] = EMPTY;
-                System.out.println("tmort : "+((startCol+finishCol)/2)+", "+((startRow+finishRow)/2));
+                // System.out.println("tmort : "+((startCol+finishCol)/2)+", "+((startRow+finishRow)/2));
             }
             
             //else { case non-walkable : simple déplacement }
