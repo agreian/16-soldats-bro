@@ -6,18 +6,20 @@ import java.lang.StringBuilder;
 
 public class Node
 {
-    private ArrayList<Node> _sons;
-
     private byte _color;
     private byte _whiteSoldiersCount = 0;
     private byte _blackSoldiersCount = 0;
 	private int _heuristique = 0;
 	
+	private int _alpha;
+	private int _beta;
+	private int _return;
+	
 	private byte[] _startPoint;
 	private byte[] _finalPoint;
 	private byte[] _ennemyPoint;
 	
-    private Node _bestSon;
+    private Node _bestSon = null;
 	
     public byte getWhiteSoldiersCount(byte[][] gameBoard)
     {
@@ -64,20 +66,18 @@ public class Node
 		return _heuristique;
     }
 	
-	public int getHeuristique()
-	{
-		return _heuristique;
-	}
-
     public Node(byte[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
     {
         if(color != BestSoldier.WHITE && color != BestSoldier.BLACK)
             throw new IllegalArgumentException("Couleur inexistante");
         if(turn != BestSoldier.WHITE && turn != BestSoldier.BLACK)
             throw new IllegalArgumentException("Couleur inexistante");
+		
+		this._alpha = Integer.MIN_VALUE;
+		this._beta = Integer.MAX_VALUE;
 
         this._color = (byte)color;
-        this._sons = new ArrayList<Node>();
+		
         byte[][] copyGameBoard = new byte[gameBoard.length][gameBoard.length];
                                 
         for(int l = 0; l < gameBoard.length; ++l)
@@ -87,58 +87,48 @@ public class Node
                 copyGameBoard[l][m] = gameBoard[l][m];
             }
         }
-		this.getHeuristique(copyGameBoard);
+		// this.getHeuristique(copyGameBoard);
 		
-		this.generateSons(copyGameBoard, turn, generationsCount);
+		this.AlphaBeta(copyGameBoard, turn, generationsCount);
 	}
 	
-	
-	// Constructeur sans prise de pion
-	private Node(byte[][] gameBoard, int color, int turn, int generationsCount, byte[] startPoint, byte[] finalPoint)
+	private Node(byte[][] gameBoard, int color, int turn, int generationsCount, byte[] startPoint, byte[] finalPoint, byte[] ennemyPoint, int alpha, int beta)
 	{
 		this._color = (byte)color;
-        this._sons = new ArrayList<Node>();
 		this._startPoint = startPoint;
 		this._finalPoint = finalPoint;
+		if(ennemyPoint != null)
+			this._ennemyPoint = ennemyPoint;
+		
+		this._alpha = alpha;
+		this._beta = beta;
 		
 		// Bouger les pions nécessaires
 		gameBoard[finalPoint[0]][finalPoint[1]] = gameBoard[startPoint[0]][startPoint[1]];
 		gameBoard[startPoint[0]][startPoint[1]] = BestSoldier.EMPTY;
-		this.getHeuristique(gameBoard);
+		if(ennemyPoint != null)
+			gameBoard[ennemyPoint[0]][ennemyPoint[1]] = BestSoldier.EMPTY;
+		//this.getHeuristique(gameBoard);
 		
-		this.generateSons(gameBoard, turn, generationsCount);
+		this.AlphaBeta(gameBoard, turn, generationsCount);
 		
 		// Revenir à l'état initial
 		gameBoard[startPoint[0]][startPoint[1]] = gameBoard[finalPoint[0]][finalPoint[1]];
 		gameBoard[finalPoint[0]][finalPoint[1]] = BestSoldier.EMPTY;
+		if(ennemyPoint != null)
+			gameBoard[ennemyPoint[0]][ennemyPoint[1]] = (turn == BestSoldier.WHITE ? BestSoldier.WHITE : BestSoldier.BLACK);
 	}
 	
-	// Constructeur avec prise de pion
-	private Node(byte[][] gameBoard, int color, int turn, int generationsCount, byte[] startPoint, byte[] finalPoint, byte[] ennemyPoint)
+	private void AlphaBeta(byte[][] gameBoard, int turn, int generationsCount)
 	{
-		this._color = (byte)color;
-        this._sons = new ArrayList<Node>();
-		this._startPoint = startPoint;
-		this._finalPoint = finalPoint;
-		this._ennemyPoint = ennemyPoint;
-		
-		// Bouger les pions nécessaires
-		gameBoard[finalPoint[0]][finalPoint[1]] = gameBoard[startPoint[0]][startPoint[1]];
-		gameBoard[ennemyPoint[0]][ennemyPoint[1]] = BestSoldier.EMPTY;
-		gameBoard[startPoint[0]][startPoint[1]] = BestSoldier.EMPTY;
-		this.getHeuristique(gameBoard);
-		
-		this.generateSons(gameBoard, turn, generationsCount);
-		
-		// Revenir à l'état initial
-		gameBoard[startPoint[0]][startPoint[1]] = gameBoard[finalPoint[0]][finalPoint[1]];
-		gameBoard[ennemyPoint[0]][ennemyPoint[1]] = (turn == BestSoldier.WHITE ? BestSoldier.WHITE : BestSoldier.BLACK);
-		gameBoard[finalPoint[0]][finalPoint[1]] = BestSoldier.EMPTY;
-	}
-	
-	private void generateSons(byte[][] gameBoard, int turn, int generationsCount)
-	{
-		if(generationsCount > 0)
+		if(generationsCount == 0)
+		{
+			////System.out.println("Heuristique en cours");
+			this._return = getHeuristique(gameBoard);
+			////System.out.println("Heuristique " + this._return );
+			return;
+		}
+		else if(generationsCount > 0)
         {
             for(int i=0;i<gameBoard.length;++i)
             {
@@ -146,103 +136,122 @@ public class Node
                 {
                     if((gameBoard[i][j] == turn) && (BestSoldier.movements[i][j].length > 1))
                     {                        
-                        for(int k = 0; k<BestSoldier.movements[i][j].length; ++k)
+                        for(int k = 0; k < BestSoldier.movements[i][j].length; ++k)
                         {
-                            // Case vide
                             int nextCol = BestSoldier.colMov[BestSoldier.movements[i][j][k]-1];
                             int nextLine = BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1];
                             nextCol = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.colMov[BestSoldier.movements[i][j][k]-1]*2 : nextCol);
                             nextLine = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1]*2 : nextLine);
                             
+							byte[] startPoint = null;
+							byte[] finalPoint = null;
+							byte[] ennemyPoint = null;
+							
+                            // Case vide
                             if(gameBoard[i + nextCol][j + nextLine] ==  0)
                             {
+								////System.out.println("VIDE");
                                 // On créé un nouveau fils
-								byte[] startPoint = new byte[] { (byte)i , (byte)j };
-								byte[] finalPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
-                                _sons.add(new Node(gameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1, startPoint, finalPoint));
+								startPoint = new byte[] { (byte)i , (byte)j };
+								finalPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
                             }
                             else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j]) // Ennemi
-                            {                                
+                            {                   
+								////System.out.println("ENNEMI");             
                                 // Vérifier qu'on peut manger l'ennemi
                                 int y = i + nextCol * 2, x = j + nextLine * 2;
                                 
+								////System.out.println("toto1");
+								
                                 if((x >= 0 && x < gameBoard.length) && (y >= 0 && y < gameBoard.length) && BestSoldier.movements[y][x].length != 1 && gameBoard[y][x] == 0)
                                 {
+								////System.out.println("toto1");
 									boolean possibleMovement = false;
+								////System.out.println("toto2");
 								
 									for(int l = 0; l < BestSoldier.movements[i + nextCol][j + nextLine].length; ++l)
 										if(BestSoldier.movements[i + nextCol][j + nextLine][l] == BestSoldier.movements[i][j][k])
 											possibleMovement = true;
 											
+								////System.out.println("toto3");
 									if(possibleMovement == false)
 										continue;
 									
+								////System.out.println("toto4");
                                     // On créé un nouveau fils
-									byte[] startPoint = new byte[] { (byte)i , (byte)j };
-									byte[] finalPoint = new byte[] {(byte)y , (byte)x };
-									byte[] ennemyPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
-									
-                                    _sons.add(new Node(gameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1, startPoint, finalPoint, ennemyPoint));
+									startPoint = new byte[] { (byte)i , (byte)j };
+									finalPoint = new byte[] {(byte)y , (byte)x };
+									ennemyPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
+								////System.out.println("toto5");
                                 }
+								else
+								{
+									continue;
+								}
                             }
+							else
+							{
+								continue;
+							}
+							////System.out.println("LOL");
+							Node son = new Node(gameBoard, 
+								_color, 
+								(turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), 
+								generationsCount - 1, 
+								startPoint, finalPoint, ennemyPoint, 
+								_alpha, _beta);
+							////System.out.println("LOL2");
+							if(turn == _color)
+							{
+								// MaxValue
+								int newAlpha = son._return;
+								if(_alpha < newAlpha)
+								{
+									_alpha = newAlpha;
+									
+									if(generationsCount == BestSoldier.MAX_GENERATIONS)
+									{
+										this._bestSon = son;
+									}
+								}
+
+								if(_alpha >= _beta)
+								{
+									this._return = _beta;
+									return;
+								}
+							}
+							else
+							{
+								// MinValue
+								int newBeta = son._return;
+								_beta = (_beta < newBeta ? _beta : newBeta);
+
+								if(_alpha >= _beta)
+								{
+									this._return = _alpha;
+									return;
+								}
+							}
                         }
                     }
                 }
             }
+			
+			if(turn == _color)
+			{
+				// MaxValue
+				this._return = _alpha;
+				return;
+			}
+			else
+			{
+				// MinValue
+				this._return = _beta;
+				return;
+			}
         }
 	}
-
-    public void Evaluation()
-    {
-        // Tous les fils ont été crées (leurs fils aussi) : lancer aB
-        MaxValue(this, Integer.MIN_VALUE, Integer.MAX_VALUE, BestSoldier.MAX_GENERATIONS);
-    }
-    
-    private static int MaxValue(Node node, int alpha, int beta, int generationsCount)
-    {
-        // aB : MaxValue
-        if(node._sons.size() == 0 || generationsCount == 0)
-            return node.getHeuristique();
-        
-        for(int i=0;i<node._sons.size();++i)
-        {
-            int newAlpha = MinValue(node._sons.get(i), alpha, beta, generationsCount - 1);
-            
-            if(alpha < newAlpha)
-            {
-                alpha = newAlpha;
-                
-                if(generationsCount == BestSoldier.MAX_GENERATIONS)
-                {
-                    node._bestSon = node._sons.get(i);
-                }
-            }
-
-            if(alpha >= beta)
-                return beta;
-        }
-
-        return alpha;
-    }
-
-    private static int MinValue(Node node, int alpha, int beta, int generationsCount)
-    {
-        // aB : MaxValue
-        if(node._sons.size() == 0 || generationsCount == 0)
-            return node.getHeuristique();
-        
-        for(int i=0;i<node._sons.size();++i)
-        {
-            int newBeta = MaxValue(node._sons.get(i), alpha, beta, generationsCount - 1);
-            beta = (beta < newBeta ? beta : newBeta);
-
-            if(alpha >= beta)
-                return alpha;
-        }
-
-        return beta;
-    }
-    
     
     // Appelé après l'instantiation d'un Node et l'exécution d'alphaBeta. Fait un diff entre <noeud courant> et "bestSon" pour donner le meilleur mouvement
     public String BestMovement()

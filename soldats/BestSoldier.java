@@ -6,7 +6,7 @@ public class BestSoldier implements IJoueur
 	public static final byte BLACK = 2;
     public static final byte EMPTY = 0;
 	public static final byte SIZE = 9; // Taille du plateau
-    public static final byte MAX_GENERATIONS = 5;
+    public static final byte MAX_GENERATIONS = 7;
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     private byte[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
@@ -102,7 +102,6 @@ public class BestSoldier implements IJoueur
 	public String choixMouvement()
     {
         Node root = new Node(state, playerColor, playerColor, MAX_GENERATIONS);
-        root.Evaluation();
         root.UpdateGameBoard(state);
 		String movement = root.BestMovement();
 		root = null;
