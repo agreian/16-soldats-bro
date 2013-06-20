@@ -15,10 +15,7 @@ public class Node
 
     private int _color;
     private int _turn;
-
-    private int _generationsCount;
-
-    
+	
     private int _whiteSoldiersCount = 0;
     public int getWhiteSoldiersCount()
     {
@@ -81,13 +78,15 @@ public class Node
     public Node(int[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
     {
 		if(generationsCount == BestSoldier.MAX_GENERATIONS)
+		{
+			// System.out.println("Existe déjà");
 			_nodesMap.clear();
+		}
 	
         if(color != BestSoldier.WHITE && color != BestSoldier.BLACK)
             throw new IllegalArgumentException("Couleur inexistante");
 
-        this._color = color;        
-        this._generationsCount = generationsCount;
+        this._color = color;
         this._sons = new ArrayList<Node>();
         this._gameBoard = new int[gameBoard.length][gameBoard.length];
                                 
@@ -105,7 +104,7 @@ public class Node
 		
 			if(_nodesMap.containsKey(this.identity()))
 			{
-				System.out.println("Existe déjà");
+				// System.out.println("Existe déjà");
 				this._sons = _nodesMap.get(this.identity())._sons;
 				return;
 			}
@@ -179,24 +178,24 @@ public class Node
     public void Evaluation()
     {
         // Tous les fils ont été crées (leurs fils aussi) : lancer aB
-        MaxValue(this, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        MaxValue(this, Integer.MIN_VALUE, Integer.MAX_VALUE, BestSoldier.MAX_GENERATIONS);
     }
     
-    private static int MaxValue(Node node, int alpha, int beta)
+    private static int MaxValue(Node node, int alpha, int beta, int generationsCount)
     {
         // aB : MaxValue
-        if(node._sons.size() == 0)
+        if(node._sons.size() == 0 || generationsCount == 0)
             return node.getSoldiersCount();
         
         for(int i=0;i<node._sons.size();++i)
         {
-            int newAlpha = MinValue(node._sons.get(i), alpha, beta);
+            int newAlpha = MinValue(node._sons.get(i), alpha, beta, generationsCount - 1);
             
             if(alpha < newAlpha)
             {
                 alpha = newAlpha;
                 
-                if(node._generationsCount == BestSoldier.MAX_GENERATIONS)
+                if(generationsCount == BestSoldier.MAX_GENERATIONS)
                 {
                     node._bestSon = node._sons.get(i);
                 }
@@ -209,15 +208,15 @@ public class Node
         return alpha;
     }
 
-    private static int MinValue(Node node, int alpha, int beta)
+    private static int MinValue(Node node, int alpha, int beta, int generationsCount)
     {
         // aB : MaxValue
-        if(node._sons.size() == 0)
+        if(node._sons.size() == 0 || generationsCount == 0)
             return node.getSoldiersCount();
         
         for(int i=0;i<node._sons.size();++i)
         {
-            int newBeta = MaxValue(node._sons.get(i), alpha, beta);
+            int newBeta = MaxValue(node._sons.get(i), alpha, beta, generationsCount - 1);
             beta = (beta < newBeta ? beta : newBeta);
 
             if(alpha >= beta)
