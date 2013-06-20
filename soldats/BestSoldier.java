@@ -101,9 +101,12 @@ public class BestSoldier implements IJoueur
 	 */
 	public String choixMouvement()
     {
+		// Crée tous le modèle permettant de choisir le coup à jouer
         Node root = new Node(state, playerColor, playerColor, MAX_GENERATIONS);
         root.UpdateGameBoard(state);
 		String movement = root.BestMovement();
+		
+		// On efface toutes les références et on suggère une collecte de la mémoire
 		root = null;
         System.gc();
         return movement;
