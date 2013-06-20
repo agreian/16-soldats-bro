@@ -7,28 +7,27 @@ import java.lang.StringBuilder;
 public class Node
 {
     private ArrayList<Node> _sons;
-	
-    private byte[][] _gameBoard;
 
-    private int _color;
-    private int _whiteSoldiersCount = 0;
-    private int _blackSoldiersCount = 0;
+    private byte _color;
+    private byte _whiteSoldiersCount = 0;
+    private byte _blackSoldiersCount = 0;
 	private int _heuristique = 0;
 	
-	// private byte[] _startPoint;
-	// private byte[] _finalPoint;
+	private byte[] _startPoint;
+	private byte[] _finalPoint;
+	private byte[] _ennemyPoint;
 	
     private Node _bestSon;
 	
-    public int getWhiteSoldiersCount()
+    public byte getWhiteSoldiersCount(byte[][] gameBoard)
     {
         if(_whiteSoldiersCount == 0)
         {
-            for(int i=0;i<_gameBoard.length;++i)
+            for(int i=0;i<gameBoard.length;++i)
             {
-                for(int j=0;j<_gameBoard[i].length;++j)
+                for(int j=0;j<gameBoard[i].length;++j)
                 {
-                    if(_gameBoard[i][j] == BestSoldier.WHITE) ++_whiteSoldiersCount;
+                    if(gameBoard[i][j] == BestSoldier.WHITE) ++_whiteSoldiersCount;
                 }
             }
         }
@@ -36,15 +35,15 @@ public class Node
         return _whiteSoldiersCount;
     }
 
-    public int getBlackSoldiersCount()
+    public byte getBlackSoldiersCount(byte[][] gameBoard)
     {
         if(_blackSoldiersCount == 0)
         {
-            for(int i=0;i<_gameBoard.length;++i)
+            for(int i=0;i<gameBoard.length;++i)
             {
-                for(int j=0;j<_gameBoard[i].length;++j)
+                for(int j=0;j<gameBoard[i].length;++j)
                 {
-                    if(_gameBoard[i][j] == BestSoldier.BLACK) ++_blackSoldiersCount;
+                    if(gameBoard[i][j] == BestSoldier.BLACK) ++_blackSoldiersCount;
                 }
             }
         }
@@ -52,18 +51,23 @@ public class Node
         return _blackSoldiersCount;
     }
 
-    public int getHeuristique()
+    public int getHeuristique(byte[][] gameBoard)
     {
 		if(_heuristique == 0)
         {
 			if(this._color == BestSoldier.WHITE)
-				_heuristique = getWhiteSoldiersCount() - getBlackSoldiersCount();
+				_heuristique = getWhiteSoldiersCount(gameBoard) - getBlackSoldiersCount(gameBoard);
 			else
-				_heuristique = getBlackSoldiersCount() - getWhiteSoldiersCount();
+				_heuristique = getBlackSoldiersCount(gameBoard) - getWhiteSoldiersCount(gameBoard);
 		}
 		
 		return _heuristique;
     }
+	
+	public int getHeuristique()
+	{
+		return _heuristique;
+	}
 
     public Node(byte[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
     {
@@ -72,72 +76,75 @@ public class Node
         if(turn != BestSoldier.WHITE && turn != BestSoldier.BLACK)
             throw new IllegalArgumentException("Couleur inexistante");
 
-        this._color = color;
+        this._color = (byte)color;
         this._sons = new ArrayList<Node>();
-        this._gameBoard = new byte[gameBoard.length][gameBoard.length];
+        byte[][] copyGameBoard = new byte[gameBoard.length][gameBoard.length];
                                 
         for(int l = 0; l < gameBoard.length; ++l)
         {
             for(int m = 0; m < gameBoard.length; ++m)
             {
-                this._gameBoard[l][m] = gameBoard[l][m];
+                copyGameBoard[l][m] = gameBoard[l][m];
             }
         }
-		this.getHeuristique();
+		this.getHeuristique(copyGameBoard);
 		
-		this.generateSons(turn, generationsCount);
+		this.generateSons(copyGameBoard, turn, generationsCount);
 	}
 	
 	
 	// Constructeur sans prise de pion
 	private Node(byte[][] gameBoard, int color, int turn, int generationsCount, byte[] startPoint, byte[] finalPoint)
 	{
-		this._color = color;
+		this._color = (byte)color;
         this._sons = new ArrayList<Node>();
-        this._gameBoard = gameBoard;
+		this._startPoint = startPoint;
+		this._finalPoint = finalPoint;
 		
 		// Bouger les pions nécessaires
 		gameBoard[finalPoint[0]][finalPoint[1]] = gameBoard[startPoint[0]][startPoint[1]];
 		gameBoard[startPoint[0]][startPoint[1]] = BestSoldier.EMPTY;
-		this.getHeuristique();
+		this.getHeuristique(gameBoard);
 		
-		this.generateSons(turn, generationsCount);
+		this.generateSons(gameBoard, turn, generationsCount);
 		
 		// Revenir à l'état initial
 		gameBoard[startPoint[0]][startPoint[1]] = gameBoard[finalPoint[0]][finalPoint[1]];
 		gameBoard[finalPoint[0]][finalPoint[1]] = BestSoldier.EMPTY;
 	}
 	
-	// Cnstructeur avec prise de pion
+	// Constructeur avec prise de pion
 	private Node(byte[][] gameBoard, int color, int turn, int generationsCount, byte[] startPoint, byte[] finalPoint, byte[] ennemyPoint)
 	{
-		this._color = color;
+		this._color = (byte)color;
         this._sons = new ArrayList<Node>();
-        this._gameBoard = gameBoard;
+		this._startPoint = startPoint;
+		this._finalPoint = finalPoint;
+		this._ennemyPoint = ennemyPoint;
 		
 		// Bouger les pions nécessaires
 		gameBoard[finalPoint[0]][finalPoint[1]] = gameBoard[startPoint[0]][startPoint[1]];
 		gameBoard[ennemyPoint[0]][ennemyPoint[1]] = BestSoldier.EMPTY;
 		gameBoard[startPoint[0]][startPoint[1]] = BestSoldier.EMPTY;
-		this.getHeuristique();
+		this.getHeuristique(gameBoard);
 		
-		this.generateSons(turn, generationsCount);
+		this.generateSons(gameBoard, turn, generationsCount);
 		
 		// Revenir à l'état initial
 		gameBoard[startPoint[0]][startPoint[1]] = gameBoard[finalPoint[0]][finalPoint[1]];
-		gameBoard[ennemyPoint[0]][ennemyPoint[1]] = (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE);
+		gameBoard[ennemyPoint[0]][ennemyPoint[1]] = (turn == BestSoldier.WHITE ? BestSoldier.WHITE : BestSoldier.BLACK);
 		gameBoard[finalPoint[0]][finalPoint[1]] = BestSoldier.EMPTY;
 	}
 	
-	private void generateSons(int turn, int generationsCount)
+	private void generateSons(byte[][] gameBoard, int turn, int generationsCount)
 	{
 		if(generationsCount > 0)
         {
-            for(int i=0;i<this._gameBoard.length;++i)
+            for(int i=0;i<gameBoard.length;++i)
             {
-                for(int j=0;j<this._gameBoard[i].length;++j)
+                for(int j=0;j<gameBoard[i].length;++j)
                 {
-                    if((this._gameBoard[i][j] == turn) && (BestSoldier.movements[i][j].length > 1))
+                    if((gameBoard[i][j] == turn) && (BestSoldier.movements[i][j].length > 1))
                     {                        
                         for(int k = 0; k<BestSoldier.movements[i][j].length; ++k)
                         {
@@ -147,19 +154,19 @@ public class Node
                             nextCol = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.colMov[BestSoldier.movements[i][j][k]-1]*2 : nextCol);
                             nextLine = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1]*2 : nextLine);
                             
-                            if(this._gameBoard[i + nextCol][j + nextLine] ==  0)
+                            if(gameBoard[i + nextCol][j + nextLine] ==  0)
                             {
                                 // On créé un nouveau fils
 								byte[] startPoint = new byte[] { (byte)i , (byte)j };
 								byte[] finalPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
-                                _sons.add(new Node(this._gameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1, startPoint, finalPoint));
+                                _sons.add(new Node(gameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1, startPoint, finalPoint));
                             }
-                            else if(this._gameBoard[i + nextCol][j + nextLine] !=  this._gameBoard[i][j]) // Ennemi
+                            else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j]) // Ennemi
                             {                                
                                 // Vérifier qu'on peut manger l'ennemi
                                 int y = i + nextCol * 2, x = j + nextLine * 2;
                                 
-                                if((x >= 0 && x < this._gameBoard.length) && (y >= 0 && y < this._gameBoard.length) && BestSoldier.movements[y][x].length != 1 && this._gameBoard[y][x] == 0)
+                                if((x >= 0 && x < gameBoard.length) && (y >= 0 && y < gameBoard.length) && BestSoldier.movements[y][x].length != 1 && gameBoard[y][x] == 0)
                                 {
 									boolean possibleMovement = false;
 								
@@ -175,7 +182,7 @@ public class Node
 									byte[] finalPoint = new byte[] {(byte)y , (byte)x };
 									byte[] ennemyPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
 									
-                                    _sons.add(new Node(this._gameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1, startPoint, finalPoint, ennemyPoint));
+                                    _sons.add(new Node(gameBoard, _color, (turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), generationsCount - 1, startPoint, finalPoint, ennemyPoint));
                                 }
                             }
                         }
@@ -242,38 +249,24 @@ public class Node
     {
         String oldPlace = "", newPlace = "";
         
-        for(int i = 0; i < _gameBoard.length; ++i)
-        {
-            for(int j = 0; j < _gameBoard.length; ++j)
-            {
-                if(_gameBoard[i][j] != _bestSon._gameBoard[i][j]) // Différence entre l'ancien et le nouveau plateau de jeu
-                {                    
-                    if(_gameBoard[i][j] == _color) // L'ancien plateau contenait notre pion : ancienne case
-                    {
-                        oldPlace = (i+1)+" "+(j+1)+" ";
-                    }
-                    
-                    else if(_bestSon._gameBoard[i][j] == _color) // Le nouveau plateau contient notre pion : nouvelle case
-                    {
-                        newPlace = (i+1)+" "+(j+1)+'\0';
-                    }
-                    
-                    // else : un pion noir a disparu : osef
-                }
-            }
-        }
-        
-        if(oldPlace == "" || newPlace == "") return "0 0 0 0"+'\0';
+		if(this._bestSon != null)
+		{
+			oldPlace = (this._bestSon._startPoint[0] + 1) + " " + (this._bestSon._startPoint[1] + 1) + " ";
+			newPlace = (this._bestSon._finalPoint[0] + 1) + " " + (this._bestSon._finalPoint[1] + 1) + "\0";
+		}
         
         return oldPlace + newPlace;
         // FORMAT COLONNE / LIGNE
     }
     
-    public byte[][] BestSonGameBoard() throws IllegalArgumentException
+    public void UpdateGameBoard(byte[][] gameBoard) throws IllegalArgumentException
     {
-        if(_bestSon == null && _bestSon._gameBoard == null)
+        if(_bestSon == null)
             throw new IllegalArgumentException("Plateau de jeu du prochain coup == null");
-            
-        return _bestSon._gameBoard;
+		
+		gameBoard[this._bestSon._finalPoint[0]][this._bestSon._finalPoint[1]] = gameBoard[this._bestSon._startPoint[0]][this._bestSon._startPoint[1]];
+		gameBoard[this._bestSon._startPoint[0]][this._bestSon._startPoint[1]] = BestSoldier.EMPTY;
+		if(this._bestSon._ennemyPoint != null)
+			gameBoard[this._bestSon._ennemyPoint[0]][this._bestSon._ennemyPoint[1]] = BestSoldier.EMPTY;
     }
 }
