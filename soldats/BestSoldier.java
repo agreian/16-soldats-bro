@@ -106,7 +106,6 @@ public class BestSoldier implements IJoueur
         state = root.BestSonGameBoard();
 		String movement = root.BestMovement();
 		root = null;
-		Node.NodesMap.clear();
         System.gc();
         return movement;
     }
