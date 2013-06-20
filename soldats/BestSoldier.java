@@ -2,14 +2,14 @@ package soldats;
 
 public class BestSoldier implements IJoueur
 {
-	public static final int WHITE = 1;
-	public static final int BLACK = 2;
-    public static final int EMPTY = 0;
+	public static final byte WHITE = 1;
+	public static final byte BLACK = 2;
+    public static final byte EMPTY = 0;
 	public static final int SIZE = 9; // Taille du plateau
     public static final int MAX_GENERATIONS = 5;
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
-    private int[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
+    private byte[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
     
     // Tableau 3D décrivant les mouvements possibles (format "colonne / ligne") à partir d'une case donnée.
     public static final int[][][] movements = {
@@ -39,7 +39,7 @@ public class BestSoldier implements IJoueur
     // ctor()
     public BestSoldier()
     {        
-        state = new int[9][9]; // Initialisation d'un tableau de 9*9 rempli de 0 (= EMPTY)
+        state = new byte[9][9]; // Initialisation d'un tableau de 9*9 rempli de 0 (= EMPTY)
         
         // Pions blancs
         for(int row = 2; row < 4; ++row)
@@ -106,7 +106,8 @@ public class BestSoldier implements IJoueur
         state = root.BestSonGameBoard();
 		String movement = root.BestMovement();
 		root = null;
-		Node.NodesMap.clear();		
+		Node.NodesMap.clear();
+        System.gc();
         return movement;
     }
 

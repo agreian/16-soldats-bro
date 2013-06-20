@@ -9,7 +9,7 @@ public class Node
     private ArrayList<Node> _sons;
     
     // 0 : Vide, 1 : Blanc, 2 : Noir
-    private int[][] _gameBoard;
+    private byte[][] _gameBoard;
 
     private Node _bestSon;
 
@@ -75,7 +75,7 @@ public class Node
         return sb.toString();
     }
 
-    public Node(int[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
+    public Node(byte[][] gameBoard, int color, int turn, int generationsCount) throws IllegalArgumentException
     {
 		if(generationsCount == BestSoldier.MAX_GENERATIONS)
 		{
@@ -88,7 +88,7 @@ public class Node
 
         this._color = color;
         this._sons = new ArrayList<Node>();
-        this._gameBoard = new int[gameBoard.length][gameBoard.length];
+        this._gameBoard = new byte[gameBoard.length][gameBoard.length];
                                 
         for(int l = 0; l < gameBoard.length; ++l)
         {
@@ -130,7 +130,7 @@ public class Node
                             if(gameBoard[i + nextCol][j + nextLine] ==  0)
                             {
                                 // On créé un nouveau fils
-                                int[][] sonGameBoard = new int[gameBoard.length][gameBoard.length];
+                                byte[][] sonGameBoard = new byte[gameBoard.length][gameBoard.length];
                                 for(int l = 0; l < sonGameBoard.length; ++l)
                                     for(int m = 0; m < sonGameBoard.length; ++m)
                                         sonGameBoard[l][m] = gameBoard[l][m];
@@ -156,7 +156,7 @@ public class Node
 										continue;
 									
                                     // On créé un nouveau fils
-                                    int[][] sonGameBoard = new int[gameBoard.length][gameBoard.length];
+                                    byte[][] sonGameBoard = new byte[gameBoard.length][gameBoard.length];
                                     
                                     for(int l = 0; l < sonGameBoard.length; ++l)
                                         for(int m = 0; m < sonGameBoard.length; ++m)
@@ -259,7 +259,7 @@ public class Node
         // FORMAT COLONNE / LIGNE
     }
     
-    public int[][] BestSonGameBoard() throws IllegalArgumentException
+    public byte[][] BestSonGameBoard() throws IllegalArgumentException
     {
         if(_bestSon == null && _bestSon._gameBoard == null)
             throw new IllegalArgumentException("Plateau de jeu du prochain coup == null");
