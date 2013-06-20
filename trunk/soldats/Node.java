@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.lang.StringBuilder;
+import java.util.Random;
 
 public class Node
 {
@@ -20,6 +21,12 @@ public class Node
 	private byte[] _ennemyPoint;
 	
     private Node _bestSon = null;
+	
+	private static Random _rnd;
+	static
+	{
+		_rnd = new Random();
+	}
 	
     public byte getWhiteSoldiersCount(byte[][] gameBoard)
     {
@@ -130,113 +137,47 @@ public class Node
 		}
 		else if(generationsCount > 0)
         {
-            for(int i=0;i<gameBoard.length;++i)
-            {
-                for(int j=0;j<gameBoard[i].length;++j)
-                {
-                    if((gameBoard[i][j] == turn) && (BestSoldier.movements[i][j].length > 1))
-                    {                        
-                        for(int k = 0; k < BestSoldier.movements[i][j].length; ++k)
-                        {
-                            int nextCol = BestSoldier.colMov[BestSoldier.movements[i][j][k]-1];
-                            int nextLine = BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1];
-                            nextCol = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.colMov[BestSoldier.movements[i][j][k]-1]*2 : nextCol);
-                            nextLine = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1]*2 : nextLine);
-                            
-							byte[] startPoint = null;
-							byte[] finalPoint = null;
-							byte[] ennemyPoint = null;
-							
-                            // Case vide
-                            if(gameBoard[i + nextCol][j + nextLine] ==  0)
-                            {
-								////System.out.println("VIDE");
-                                // On créé un nouveau fils
-								startPoint = new byte[] { (byte)i , (byte)j };
-								finalPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
-                            }
-                            else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j]) // Ennemi
-                            {                   
-								////System.out.println("ENNEMI");             
-                                // Vérifier qu'on peut manger l'ennemi
-                                int y = i + nextCol * 2, x = j + nextLine * 2;
-                                
-								////System.out.println("toto1");
-								
-                                if((x >= 0 && x < gameBoard.length) && (y >= 0 && y < gameBoard.length) && BestSoldier.movements[y][x].length != 1 && gameBoard[y][x] == 0)
-                                {
-								////System.out.println("toto1");
-									boolean possibleMovement = false;
-								////System.out.println("toto2");
-								
-									for(int l = 0; l < BestSoldier.movements[i + nextCol][j + nextLine].length; ++l)
-										if(BestSoldier.movements[i + nextCol][j + nextLine][l] == BestSoldier.movements[i][j][k])
-											possibleMovement = true;
-											
-								////System.out.println("toto3");
-									if(possibleMovement == false)
-										continue;
-									
-								////System.out.println("toto4");
-                                    // On créé un nouveau fils
-									startPoint = new byte[] { (byte)i , (byte)j };
-									finalPoint = new byte[] {(byte)y , (byte)x };
-									ennemyPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
-								////System.out.println("toto5");
-                                }
-								else
-								{
-									continue;
-								}
-                            }
-							else
-							{
-								continue;
-							}
-							////System.out.println("LOL");
-							Node son = new Node(gameBoard, 
-								_color, 
-								(turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), 
-								generationsCount - 1, 
-								startPoint, finalPoint, ennemyPoint, 
-								_alpha, _beta);
-							////System.out.println("LOL2");
-							if(turn == _color)
-							{
-								// MaxValue
-								int newAlpha = son._return;
-								if(_alpha < newAlpha)
-								{
-									_alpha = newAlpha;
-									
-									if(generationsCount == BestSoldier.MAX_GENERATIONS)
-									{
-										this._bestSon = son;
-									}
-								}
-
-								if(_alpha >= _beta)
-								{
-									this._return = _beta;
-									return;
-								}
-							}
-							else
-							{
-								// MinValue
-								int newBeta = son._return;
-								_beta = (_beta < newBeta ? _beta : newBeta);
-
-								if(_alpha >= _beta)
-								{
-									this._return = _alpha;
-									return;
-								}
-							}
-                        }
-                    }
-                }
-            }
+			int random = _rnd.nextInt(4);
+			switch(random)
+			{
+				case 0:
+				{
+					for(int i=0;i<gameBoard.length;++i)
+						for(int j=0;j<gameBoard.length;++j)
+							if(AlphaBeta(i, j, gameBoard, turn, generationsCount) == true)
+								return;
+					break;
+				}
+				case 1:
+				{
+					for(int i = (gameBoard.length - 1); i >= 0; --i)
+						for(int j = (gameBoard.length - 1); j >= 0; --j)
+							if(AlphaBeta(i, j, gameBoard, turn, generationsCount) == true)
+								return;
+					break;
+				}
+				case 2:
+				{
+					for(int j=0;j<gameBoard.length;++j)
+						for(int i=0;i<gameBoard.length;++i)
+							if(AlphaBeta(i, j, gameBoard, turn, generationsCount) == true)
+								return;
+					break;
+				}
+				case 3:
+				{
+					for(int j = (gameBoard.length - 1); j >= 0; --j)
+						for(int i = (gameBoard.length - 1); i >= 0; --i)
+							if(AlphaBeta(i, j, gameBoard, turn, generationsCount) == true)
+								return;
+					break;
+				}
+				default:
+				{
+					System.out.println("ERROR");
+					break;
+				}
+			}
 			
 			if(turn == _color)
 			{
@@ -251,6 +192,106 @@ public class Node
 				return;
 			}
         }
+	}
+	
+	private boolean AlphaBeta(int i, int j, byte[][] gameBoard, int turn, int generationsCount)
+	{
+		if((gameBoard[i][j] == turn) && (BestSoldier.movements[i][j].length > 1))
+		{                        
+			for(int k = 0; k < BestSoldier.movements[i][j].length; ++k)
+			{
+				int nextCol = BestSoldier.colMov[BestSoldier.movements[i][j][k]-1];
+				int nextLine = BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1];
+				nextCol = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.colMov[BestSoldier.movements[i][j][k]-1]*2 : nextCol);
+				nextLine = (BestSoldier.movements[i + nextCol][j + nextLine].length == 1 ? BestSoldier.rowMov[BestSoldier.movements[i][j][k]-1]*2 : nextLine);
+				
+				byte[] startPoint = null;
+				byte[] finalPoint = null;
+				byte[] ennemyPoint = null;
+				
+				// Case vide
+				if(gameBoard[i + nextCol][j + nextLine] ==  0)
+				{
+					////System.out.println("VIDE");
+					// On créé un nouveau fils
+					startPoint = new byte[] { (byte)i , (byte)j };
+					finalPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
+				}
+				else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j]) // Ennemi
+				{          
+					// Vérifier qu'on peut manger l'ennemi
+					int y = i + nextCol * 2, x = j + nextLine * 2;
+					
+					if((x >= 0 && x < gameBoard.length) && (y >= 0 && y < gameBoard.length) && BestSoldier.movements[y][x].length != 1 && gameBoard[y][x] == 0)
+					{
+						boolean possibleMovement = false;
+						
+					
+						for(int l = 0; l < BestSoldier.movements[i + nextCol][j + nextLine].length; ++l)
+							if(BestSoldier.movements[i + nextCol][j + nextLine][l] == BestSoldier.movements[i][j][k])
+								possibleMovement = true;
+								
+						if(possibleMovement == false)
+							continue;
+							
+						// On créé un nouveau fils
+						startPoint = new byte[] { (byte)i , (byte)j };
+						finalPoint = new byte[] {(byte)y , (byte)x };
+						ennemyPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
+					}
+					else
+					{
+						continue;
+					}
+				}
+				else
+				{
+					continue;
+				}
+				////System.out.println("LOL");
+				Node son = new Node(gameBoard, 
+					_color, 
+					(turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), 
+					generationsCount - 1, 
+					startPoint, finalPoint, ennemyPoint, 
+					_alpha, _beta);
+				////System.out.println("LOL2");
+				if(turn == _color)
+				{
+					// MaxValue
+					int newAlpha = son._return;
+					if(_alpha < newAlpha)
+					{
+						_alpha = newAlpha;
+						
+						if(generationsCount == BestSoldier.MAX_GENERATIONS)
+						{
+							this._bestSon = son;
+						}
+					}
+
+					if(_alpha >= _beta)
+					{
+						this._return = _beta;
+						return true;
+					}
+				}
+				else
+				{
+					// MinValue
+					int newBeta = son._return;
+					_beta = (_beta < newBeta ? _beta : newBeta);
+
+					if(_alpha >= _beta)
+					{
+						this._return = _alpha;
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
     
     // Appelé après l'instantiation d'un Node et l'exécution d'alphaBeta. Fait un diff entre <noeud courant> et "bestSon" pour donner le meilleur mouvement
