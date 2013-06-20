@@ -288,6 +288,7 @@ public class Node
 				if(turn == _color)
 				{
 					// MaxValue, algo classique, rien à dire, return contient la valeur de retour
+					// On chercher à maximiser alpha
 					int newAlpha = son._return;
 					if(_alpha < newAlpha)
 					{
@@ -300,6 +301,7 @@ public class Node
 						}
 					}
 
+					// Ici on elague et donc on ne génère pas les prochains fils de cette génération car on considère qu'on a déjà trouvé le meilleur heuristique
 					if(_alpha >= _beta)
 					{
 						this._return = _beta;
@@ -309,9 +311,11 @@ public class Node
 				else
 				{
 					// MinValue, algo classique, rien à dire, return contient la valeur de retour
+					// On cherche à minimiser beta
 					int newBeta = son._return;
 					_beta = (_beta < newBeta ? _beta : newBeta);
 
+					// Ici on elague et donc on ne génère pas les prochains fils de cette génération car on considère qu'on a déjà trouvé le meilleur heuristique
 					if(_alpha >= _beta)
 					{
 						this._return = _alpha;
