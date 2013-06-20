@@ -6,7 +6,7 @@ public class BestSoldier implements IJoueur
 	public static final int BLACK = 2;
     public static final int EMPTY = 0;
 	public static final int SIZE = 9; // Taille du plateau
-    public static final int MAX_GENERATIONS = 3;
+    public static final int MAX_GENERATIONS = 5;
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     private int[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
@@ -116,7 +116,7 @@ public class BestSoldier implements IJoueur
 	public void declareLeVainqueur(int colour)
     {
         if(playerColor == colour)
-            System.out.println("J'ai gagné");
+            System.out.println("BRAH BRAH !!!! WIN !!!!");
         
         else
             System.out.println("J'ai perdu");            
@@ -156,7 +156,6 @@ public class BestSoldier implements IJoueur
             if(movements[(startCol+finishCol)/2][(startRow+finishRow)/2].length > 1) // case walkable : pièce mangée
             {
                 state[(startCol+finishCol)/2][(startRow+finishRow)/2] = EMPTY;
-                // System.out.println("tmort : "+((startCol+finishCol)/2)+", "+((startRow+finishRow)/2));
             }
             
             //else { case non-walkable : simple déplacement }
@@ -168,6 +167,6 @@ public class BestSoldier implements IJoueur
 	 */
 	public String binoName()
     {
-        return "Nom du binome";
+        return "Zbeul team";
     }
 }
