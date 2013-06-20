@@ -93,7 +93,7 @@ public class Node
 
         if(generationsCount > 0)
         {
-			if(_nodesMap.containsValue(this))
+			if(_nodesMap.containsKey(this.hashCode()))
 			{
 				System.out.println("Existe déjà");
 				this._sons = _nodesMap.get(this.hashCode())._sons;
