@@ -86,12 +86,12 @@ public class Node
             throw new IllegalArgumentException("Couleur inexistante");
 		
 		// Initialisation de Alpha et Beta aux bonnes valeurs !
-		this._alpha = Integer.MIN_VALUE;
-		this._beta = Integer.MAX_VALUE;
+		this._alpha = Integer.MIN_VALUE; // équivalent à -infini
+		this._beta = Integer.MAX_VALUE; // équivalent à +infini
 
         this._color = (byte)color;
 		
-		// On recopie UNE SEULE FOIS le game board histoire de ne pas mofidier celui présent dans BestSoldier
+		// On recopie UNE SEULE FOIS le plateau de jeu, afin de ne pas mofidier celui présent dans BestSoldier
 		// On ne recopie rien d'autre par la suite
         byte[][] copyGameBoard = new byte[gameBoard.length][gameBoard.length];             
         for(int l = 0; l < gameBoard.length; ++l)
@@ -102,11 +102,10 @@ public class Node
             }
         }
 		
-		// Appel de alpha beta
-		this.AlphaBeta(copyGameBoard, turn, generationsCount);
+		this.AlphaBeta(copyGameBoard, turn, generationsCount); // exécution d'alpha beta avec la copie du plateau de jeu initial
 	}
 	
-	// Constructeur des tous les autres noeuds à part le 1er
+	// Constructeur de tous les autres noeuds (tous sauf le premier [racine])
 	private Node(byte[][] gameBoard, int color, int turn, int generationsCount, byte[] startPoint, byte[] finalPoint, byte[] ennemyPoint, int alpha, int beta)
 	{
 		this._color = (byte)color;
@@ -116,26 +115,23 @@ public class Node
 		this._finalPoint = finalPoint;
 		// EnnemyPoint permet de connaitre les coordonnées du pion qui a été éliminé entre le noeud pere et le noeud fils, est non null si un pion a été mangé
 		if(ennemyPoint != null)
-			this._ennemyPoint = ennemyPoint;
+			this._ennemyPoint = ennemyPoint; // un pion ennemi a été mangé, on stock ses coordonnées
 		
-		this._alpha = alpha;
-		this._beta = beta;
+		this._alpha = alpha; // alpha calculé par la fonction AlphaBeta
+		this._beta = beta; // beta calculé par la fonction AlphaBeta
 		
 		// On bouge les pions nécessaires
-		gameBoard[finalPoint[0]][finalPoint[1]] = gameBoard[startPoint[0]][startPoint[1]];
-		gameBoard[startPoint[0]][startPoint[1]] = BestSoldier.EMPTY;
-		if(ennemyPoint != null)
-			gameBoard[ennemyPoint[0]][ennemyPoint[1]] = BestSoldier.EMPTY;
-		//this.getHeuristique(gameBoard);
+		gameBoard[finalPoint[0]][finalPoint[1]] = gameBoard[startPoint[0]][startPoint[1]]; // le point de destination prend la couleur du point de départ
+		gameBoard[startPoint[0]][startPoint[1]] = BestSoldier.EMPTY; // le point de départ est maintenant vide
+		if(ennemyPoint != null) gameBoard[ennemyPoint[0]][ennemyPoint[1]] = BestSoldier.EMPTY; // Pion mangé => case vide
 		
-		// Appel de alpha beta
+		// Exécution d'alphaBeta avec cette nouvelle configuration (déplacement effectué)
 		this.AlphaBeta(gameBoard, turn, generationsCount);
 		
-		// Après les traitements on revient à l'état initial pour notre père
+		// Après les traitements on revient à l'état initial (pour le noeud père)
 		gameBoard[startPoint[0]][startPoint[1]] = gameBoard[finalPoint[0]][finalPoint[1]];
 		gameBoard[finalPoint[0]][finalPoint[1]] = BestSoldier.EMPTY;
-		if(ennemyPoint != null)
-			gameBoard[ennemyPoint[0]][ennemyPoint[1]] = (turn == BestSoldier.WHITE ? BestSoldier.WHITE : BestSoldier.BLACK);
+		if(ennemyPoint != null) gameBoard[ennemyPoint[0]][ennemyPoint[1]] = (turn == BestSoldier.WHITE ? BestSoldier.WHITE : BestSoldier.BLACK);
 	}
 	
 	private void AlphaBeta(byte[][] gameBoard, int turn, int generationsCount)
@@ -146,10 +142,11 @@ public class Node
 			this._return = getHeuristique(gameBoard);
 			return;
 		}
-		else if(generationsCount > 0)
+
+		else if(generationsCount > 0) // Sinon on descend dans chaque fils pour atteindre une feuille et ainsi obtenir son heuristique
         {
-			// Permet de parcourir différemment la grille pour trouver les fils (ceux ci étant chaque déplacement possible
-			// Les trouver différemment permet de parcourir l'arbre différemment entre chaque tour
+			// Permet de parcourir différemment la grille pour trouver les fils (ceux ci représentant chacun un déplacement possible)
+			// Les trouver différemment permet de parcourir l'arbre différemment entre chaque tour (et ainsi minimiser les chances de répéter infiniment deux coups menant au DEUCE)
 			int random = _rnd.nextInt(4);
 			switch(random)
 			{
@@ -187,12 +184,12 @@ public class Node
 				}
 				default:
 				{
-					System.out.println("ERROR");
+					System.out.println("RANDOM ERROR");
 					break;
 				}
 			}
 			
-			// Fin des fonction MaxValue et MinValue
+			// Fin des fonction MaxValue et MinValue. Selon le tour (coup ami ou ennemi), met à jour alpha et beta
 			if(turn == _color)
 			{
 				// MaxValue
@@ -201,6 +198,7 @@ public class Node
 				this._return = _alpha;
 				return;
 			}
+            
 			else
 			{
 				// MinValue
@@ -212,10 +210,10 @@ public class Node
         }
 	}
 	
-	// AlphaBeta, appelé pour chaque grille de la game board histoire de la parcourir différemment
+	// AlphaBeta, appelé pour chaque grille ddu plateau de jeu, afin de le parcourir différemment
 	private boolean AlphaBeta(int i, int j, byte[][] gameBoard, int turn, int generationsCount)
 	{
-		// Si le pion est de la couleur qui doit jouer et que des mouvements sont possibles sur la case
+		// Si le pion est de la couleur qui doit jouer et que des mouvements sont possibles sur la case designée
 		if((gameBoard[i][j] == turn) && (BestSoldier.movements[i][j].length > 1))
 		{                        
 			// Pour chaque mouvement possible depuis notre case
@@ -230,51 +228,54 @@ public class Node
 				byte[] finalPoint = null;
 				byte[] ennemyPoint = null;
 				
-				// Cas : La case d'arrivée est vide
+				// La case d'arrivée est vide
 				if(gameBoard[i + nextCol][j + nextLine] ==  0)
 				{
 					// On met les coordonnées du déplacement
 					startPoint = new byte[] { (byte)i , (byte)j };
 					finalPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
 				}
-				else if(gameBoard[i + nextCol][j + nextLine] !=  gameBoard[i][j]) // Ennemi
+                
+                // La case contient un soldat ennemi
+				else if(gameBoard[i + nextCol][j + nextLine] != gameBoard[i][j])
 				{          
-					// Ici on vérifie qu'on peut manger l'ennemi :
-					//	- La case derrière lui ne contient personne
-					//	- La case derrière lui est une case où on peut aller
-					// 	- On peut aller en ligne droite à la case derrière lui
+					// Ici il faut vérifier que l'on peut manger le soldat de l'ennemi :
+					//	- La case derrière son soldat est vide ET c'est une case où des mouvements sont possibles
+					// 	- On peut se rendre directement dans cette case (en sautant le soldat ennemi)
 					int y = i + nextCol * 2, x = j + nextLine * 2;
 					
-					// Ici en plus des conditions de bord on vérifie les 2 1ères conditions
+					// Vérifie la première condition et prévient des effets de bord
 					if((x >= 0 && x < gameBoard.length) && (y >= 0 && y < gameBoard.length) && BestSoldier.movements[y][x].length != 1 && gameBoard[y][x] == 0)
 					{
-						// Là on vérifie la dernière condition
+						// Vérifie la deuxième condition
 						boolean possibleMovement = false;
 						for(int l = 0; l < BestSoldier.movements[i + nextCol][j + nextLine].length; ++l)
 							if(BestSoldier.movements[i + nextCol][j + nextLine][l] == BestSoldier.movements[i][j][k])
 								possibleMovement = true;
 								
 						if(possibleMovement == false)
-							continue; // Déplacement impossible 3ème non respectée
+							continue; // Déplacement impossible, deuxième condition non respectée : prochaine itération de k
 						
-						// On met les coordonnées du déplacement, et celles de l'ennemi mort !
+						// Affecte les coordonnées du déplacement, et celles du soldat mangé
 						startPoint = new byte[] { (byte)i , (byte)j };
 						finalPoint = new byte[] {(byte)y , (byte)x };
 						ennemyPoint = new byte[] { (byte)(i + nextCol) , (byte)(j + nextLine) };
 					}
+                    
 					else
 					{
 						// Déplacement impossible 1ères conditions non respectées
-						continue;
+						continue; // Prochaine itération sur k
 					}
 				}
+                
 				else
 				{
-					// Cas où dans la case d'arrivée il y a un ami, pas d'intérêt
+					// Cas où c'est un ami dans la case de destination : pas d'intérêt
 					continue;
 				}
 				
-				// On créé le fils trouvé, et il va créer ses fils qui vont créer leur fils etc...
+				// Crée le fils trouvé, qui va lui même créer ses fils, qui vont créer leur fils, etc...
 				Node son = new Node(gameBoard, 
 					_color, 
 					(turn == BestSoldier.WHITE ? BestSoldier.BLACK : BestSoldier.WHITE), 
@@ -287,35 +288,37 @@ public class Node
 				// MinValue est à éxecuter quand l'ennemi doit jouer
 				if(turn == _color)
 				{
-					// MaxValue, algo classique, rien à dire, return contient la valeur de retour
+					// MaxValue (algorithme classique), _return contient la valeur de retour
 					// On chercher à maximiser alpha
 					int newAlpha = son._return;
+                    
 					if(_alpha < newAlpha)
 					{
 						_alpha = newAlpha;
 						
-						// Si on est dans la fonction du 1er noeud celui ci enregistre son fils qui lui promet le meilleur résultat afin d'éffectuer son mouvement
+						// Si on est dans la fonction du 1er noeud, celui-ci enregistre son fils (dans _bestSon), qui lui promet le meilleur résultat afin d'effectuer son mouvement
 						if(generationsCount == BestSoldier.MAX_GENERATIONS)
 						{
 							this._bestSon = son;
 						}
 					}
 
-					// Ici on elague et donc on ne génère pas les prochains fils de cette génération car on considère qu'on a déjà trouvé le meilleur heuristique
+					// élagage : on ne génère pas les prochains fils de cette génération car on considère que l'on a déjà trouvé la meilleure heuristique
 					if(_alpha >= _beta)
 					{
 						this._return = _beta;
 						return true;
 					}
 				}
+                
 				else
 				{
-					// MinValue, algo classique, rien à dire, return contient la valeur de retour
+					// MinValue (algorithme classique), _return contient la valeur de retour
 					// On cherche à minimiser beta
 					int newBeta = son._return;
 					_beta = (_beta < newBeta ? _beta : newBeta);
 
-					// Ici on elague et donc on ne génère pas les prochains fils de cette génération car on considère qu'on a déjà trouvé le meilleur heuristique
+					// élagage : on ne génère pas les prochains fils de cette génération car on considère que l'on a déjà trouvé la meilleure heuristique
 					if(_alpha >= _beta)
 					{
 						this._return = _alpha;
