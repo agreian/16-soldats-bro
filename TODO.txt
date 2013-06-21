@@ -12,3 +12,13 @@ On ne peut pas passer de 4,6 à 4,8 car il est impossible d'aller de 4,7 à 4,8.
 TODO :
 - Randomize sur l'ordre des fils pour éviter une boucle infinie (les deux IA qui jouent toujours le même coup)
 - Corriger BestMovement & BestSonGameBoard
+
+//****************** <== Optimisation de PGM faite par le Brorémy Babouche, job done !
+
+
+TODO RAPPORT :
+- Sommaire
+- Réussir à monter à 15 pages sans faire de trashtalk
+- Balancer de la screen
+- Bien expliquer l'optimisation car on n'a rien fait de spécial sur l'heuristique
+- Expliquer notre protocol de test ?
