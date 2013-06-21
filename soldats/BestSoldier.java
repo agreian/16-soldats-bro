@@ -6,7 +6,8 @@ public class BestSoldier implements IJoueur
 	public static final byte BLACK = 2;
     public static final byte EMPTY = 0;
 	public static final byte SIZE = 9; // Taille du plateau
-    public static final byte MAX_GENERATIONS = 7;
+    
+    public static final byte MAX_GENERATIONS = 7; // PROFONDEUR / HORIZON
     
     private int playerColor; // Couleur du joueur. 1 : Blanc, 2 = Noir
     private byte[][] state; // Tableau 2D décrivant l'état d'une cellule. Initialisé dans le ctor()
@@ -121,10 +122,10 @@ public class BestSoldier implements IJoueur
 	public void declareLeVainqueur(int colour)
     {
         if(playerColor == colour)
-            System.out.println("BRAH BRAH !!!! WIN !!!!");
+            System.out.println("J'ai gagné, évidemment !");
         
         else
-            System.out.println("J'ai perdu");            
+            System.out.println("J'ai perdu ?! Impossible !");            
     }
 	
 	
