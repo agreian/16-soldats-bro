@@ -210,7 +210,7 @@ public class Node
         }
 	}
 	
-	// AlphaBeta, appelé pour chaque grille ddu plateau de jeu, afin de le parcourir différemment
+	// AlphaBeta, appelé pour chaque grille du plateau de jeu, afin de le parcourir différemment
 	private boolean AlphaBeta(int i, int j, byte[][] gameBoard, int turn, int generationsCount)
 	{
 		// Si le pion est de la couleur qui doit jouer et que des mouvements sont possibles sur la case designée
